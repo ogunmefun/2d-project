@@ -1,0 +1,27 @@
+# Unity generated state (project lives in Neon Relay/)
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+**/[Bb]uilds/
+**/[Bb]uild/
+**/[Mm]emoryCaptures/
+**/[Rr]ecordings/
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.csproj
+**/*.sln
+**/*.slnx
+**/*.user
+**/*.pidb
+**/*.pdb
+**/*.opendb
+**/*.VC.db
+**/sysinfo.txt
+**/.DS_Store
+artifacts/
+*.zip
+*.log
+**/Assets/Resources/PerformanceTestRun*.json*
