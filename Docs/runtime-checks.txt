@@ -1,0 +1,14 @@
+PASS: Title screen loads
+PASS: Enter starts the game
+PASS: D moves the player right
+PASS: Space jumps
+PASS: Second Space press double jumps
+PASS: Escape pauses
+PASS: Pause freezes gameplay time
+PASS: Escape resumes
+PASS: R restarts the sector
+PASS: E opens a nearby relay
+PASS: Wrong routing stays in the puzzle
+PASS: Keyboard routing solves the puzzle
+
+ALL RUNTIME CHECKS PASSED

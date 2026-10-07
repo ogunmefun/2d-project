@@ -257,7 +257,7 @@ namespace NeonRelay
             if(Button(screen==ScreenState.Paused?"RESUME":"PAUSE  II",1131,53,111,26,false,11) && (screen==ScreenState.Playing || screen==ScreenState.Paused)) SetScreen(screen==ScreenState.Paused?ScreenState.Playing:ScreenState.Paused);
             Box(40,664,1200,1,new Color(.19f,.28f,.36f));
             Text("A D / ARROWS   move     SPACE / W / UP   double jump     E   connect",42,680,850,22,12,mutedText);
-            Text("R  restart    ESC  pause    M  sound",835,680,380,22,12,mutedText,TextAnchor.MiddleRight);
+            Text("R  restart    ESC  pause    M  sound",835,680,340,22,12,mutedText,TextAnchor.MiddleRight);
             for(int i=0;i<2;i++) Blob(1205+i*17,686,8,i<sim.JumpsLeft?Accent:new Color(.2f,.25f,.3f));
         }
 
@@ -334,7 +334,7 @@ namespace NeonRelay
         void Pill(string text,float x,float y,float w,Color c) { Box(x,y,w,29,panel); Text(text,x,y,w,29,12,c,TextAnchor.MiddleCenter,true); }
         void Text(string text,float x,float y,float w,float h,int size,Color c,TextAnchor align=TextAnchor.UpperLeft,bool bold=false)
         {
-            label.fontSize=size; label.normal.textColor=c; label.alignment=align; label.fontStyle=bold?FontStyle.Bold:FontStyle.Normal;
+            label.fontSize=size; label.normal.textColor=QualitySettings.activeColorSpace==ColorSpace.Linear?c.gamma:c; label.alignment=align; label.fontStyle=bold?FontStyle.Bold:FontStyle.Normal;
             GUI.Label(new Rect(x,y,w,h),text,label);
         }
         void Box(float x,float y,float w,float h,Color c) => Fill(new Rect(x,y,w,h),c);

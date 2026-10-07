@@ -4,6 +4,16 @@ A small, complete 2D precision platformer built in **Unity 6.5 (6000.5.10f1)** f
 
 You are a little maintenance robot bringing a dark city back online. Recover three energy cells in each sector, solve its power-routing clue at the terminal, and reach the exit. Three stages introduce moving platforms, patrolling saws, spikes, gaps, and timed lasers.
 
+![Neon Relay gameplay](Docs/gameplay.png)
+
+## Download and play on Windows
+
+[Download Neon Relay 1.0 for Windows x64](https://github.com/ogunmefun/2d-project/releases/download/v1.0.0/NeonRelay-Windows-v1.0.0.zip).
+
+Extract the **whole ZIP**, then open **`NeonRelay.exe`** inside the extracted folder. Keep its data folder and DLLs together. Unity is not required to play the download.
+
+The release was checked with **38 gameplay checks** and **12 executable input/UI checks**, with a Windows build reporting **zero errors and zero warnings**. See [verification details](Docs/VERIFICATION.md).
+
 ## Play in Unity
 
 1. Clone or download this repository.
@@ -54,6 +64,14 @@ Results appear in the ignored `artifacts` folder. With the editor closed, batch 
   -executeMethod NeonRelay.Editor.BuildTools.VerifyAndBuild `
   -logFile "$PWD\build.log"
 ```
+
+The Windows executable also includes an opt-in smoke test. This opens and exercises the title screen, movement, jumps, pause/resume, restart, and relay input, saves screenshots, and exits. Keep its window focused while the test runs:
+
+```powershell
+& '.\Neon Relay\Builds\Windows\NeonRelay.exe' -smokeTest "$PWD\artifacts\runtime" -logFile "$PWD\artifacts\runtime\player.log"
+```
+
+The relay UI smoke test positions the robot beside the terminal to isolate its interface; the editor's route checks separately prove all three terminals and exits are reachable through movement.
 
 ## Project layout
 

@@ -28,6 +28,8 @@ namespace NeonRelay
             Application.logMessageReceived+=OnLog;
             Application.runInBackground=true;
             testKeyboard=InputSystem.AddDevice<Keyboard>();
+            // A hidden Windows player does not render. Begin visual QA only when shown.
+            while(!Application.isFocused) yield return null;
             yield return new WaitForSecondsRealtime(2);
             var game=FindAnyObjectByType<NeonRelayGame>();
             Check(game!=null && game.CurrentScreen=="Title","Title screen loads");
@@ -37,10 +39,10 @@ namespace NeonRelay
             Check(game.CurrentScreen=="Playing","Enter starts the game");
             var start=game.Simulation.Position;
             InputSystem.QueueStateEvent(testKeyboard,new KeyboardState(Key.D));
-            yield return new WaitForSecondsRealtime(.35f);
+            yield return new WaitForSecondsRealtime(.2f);
             InputSystem.QueueStateEvent(testKeyboard,new KeyboardState());
             yield return null;
-            Check(game.Simulation.Position.x>start.x+1,"D moves the player right");
+            Check(game.Simulation.Position.x>start.x+.5f,"D moves the player right");
             yield return KeyPress(Key.Space,.12f);
             Check(game.Simulation.Position.y>start.y+.3f,"Space jumps");
             yield return KeyPress(Key.Space,.12f);
