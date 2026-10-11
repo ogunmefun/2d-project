@@ -1,45 +1,34 @@
-PASS: Player spawns and lands on a solid floor
-PASS: Second jump works in midair
-PASS: Third air jump is rejected
-PASS: Landing restores both jumps
-PASS: Releasing jump cuts ascent for precise control
-PASS: World boundary blocks walking out of the level
-PASS: Spikes trigger a safe respawn
-PASS: Falling into a gap triggers a respawn
-PASS: Sector 1: first cell reachable by normal jumps
-PASS: Sector 1: middle cell reachable through the obstacle route
-PASS: Sector 1: checkpoint activates through normal movement
-PASS: Sector 1: all three cells collected using normal movement
-PASS: Sector 1: relay terminal reachable
-PASS: Sector 1: wrong circuit answer is rejected
-PASS: Sector 1: matching circuit answer powers relay
-PASS: Sector 1: checkpoint death preserves cells and solved relay
-PASS: Sector 1: exit can be reached and completed after a checkpoint retry
-PASS: Sector 2: first cell reachable by normal jumps
-PASS: Sector 2: middle cell reachable through the obstacle route
-PASS: Sector 2: checkpoint activates through normal movement
-PASS: Sector 2: all three cells collected using normal movement
-PASS: Sector 2: relay terminal reachable
-PASS: Sector 2: wrong circuit answer is rejected
-PASS: Sector 2: matching circuit answer powers relay
-PASS: Sector 2: checkpoint death preserves cells and solved relay
-PASS: Sector 2: exit can be reached and completed after a checkpoint retry
-PASS: Sector 3: first cell reachable by normal jumps
-PASS: Sector 3: middle cell reachable through the obstacle route
-PASS: Sector 3: checkpoint activates through normal movement
-PASS: Sector 3: all three cells collected using normal movement
-PASS: Sector 3: relay terminal reachable
-PASS: Sector 3: wrong circuit answer is rejected
-PASS: Sector 3: matching circuit answer powers relay
-PASS: Sector 3: checkpoint death preserves cells and solved relay
-PASS: Sector 3: exit can be reached and completed after a checkpoint retry
-PASS: Laser has safe, warning, and harmful phases
-PASS: Moving platform changes its position
-PASS: Exit stays locked without energy cells and relay power
-PASS: A correct circuit cannot be submitted remotely
-PASS: Invalid relay switch indices cannot alter the circuit
-PASS: Robot lands on the moving platform
-PASS: Moving platform carries a standing robot without sliding
-PASS: Exact floor contact never becomes a horizontal side collision
+PASS: Ready countdown gives the player preparation time
+PASS: Runs forward without movement input and stays on floor
+PASS: Double jump works and a third air jump is rejected
+PASS: Releasing jump early produces a short hop
+PASS: Missing the first spike causes a retry with preparation time
+PASS: Crossing the checkpoint while airborne saves progress
+PASS: Retry keeps checkpoint and optional cells
+PASS: Pit death returns to checkpoint
+PASS: Stage 1 completes using jump inputs only, timing variant 0
+PASS: Stage 1 route crosses the checkpoint
+PASS: Stage 1 completes using jump inputs only, timing variant 1
+PASS: Stage 1 route crosses the checkpoint
+PASS: Stage 1 completes using jump inputs only, timing variant 2
+PASS: Stage 1 route crosses the checkpoint
+PASS: Stage 1 accepts an airborne finish without any cells or puzzles
+PASS: Completed stage freezes until transition
+PASS: Stage 2 completes using jump inputs only, timing variant 0
+PASS: Stage 2 route crosses the checkpoint
+PASS: Stage 2 completes using jump inputs only, timing variant 1
+PASS: Stage 2 route crosses the checkpoint
+PASS: Stage 2 completes using jump inputs only, timing variant 2
+PASS: Stage 2 route crosses the checkpoint
+PASS: Stage 2 accepts an airborne finish without any cells or puzzles
+PASS: Completed stage freezes until transition
+PASS: Stage 3 completes using jump inputs only, timing variant 0
+PASS: Stage 3 route crosses the checkpoint
+PASS: Stage 3 completes using jump inputs only, timing variant 1
+PASS: Stage 3 route crosses the checkpoint
+PASS: Stage 3 completes using jump inputs only, timing variant 2
+PASS: Stage 3 route crosses the checkpoint
+PASS: Stage 3 accepts an airborne finish without any cells or puzzles
+PASS: Completed stage freezes until transition
 
-43 checks passed.
+ALL 32 GAMEPLAY CHECKS PASSED

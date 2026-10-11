@@ -1,149 +1,64 @@
 using System;
-using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
-
 namespace NeonRelay.Editor
 {
     public static class GameChecks
     {
-        static readonly List<string> passed = new List<string>();
-        static void Check(bool condition, string message)
-        {
-            if (!condition) throw new Exception("FAIL: " + message);
-            passed.Add("PASS: " + message);
-        }
-        static void Idle(GameSimulation sim, int frames = 120) { for(int i=0;i<frames;i++) sim.Tick(0,false,false); }
-
+        static StringBuilder report;
+        static int count;
+        static void Check(bool value,string message) { if(!value) throw new Exception("FAIL: "+message); count++; report.AppendLine("PASS: "+message); }
+        static void Ready(GameSimulation s) { while(s.ReadyTime>0) s.Tick(false,false); }
         public static string Run()
         {
-            passed.Clear();
-            var sim = new GameSimulation(0);
-            Idle(sim);
-            Check(sim.Grounded && Mathf.Abs(sim.Position.y - 1) < .01f, "Player spawns and lands on a solid floor");
-            sim.Tick(0,true,true);
-            for(int i=0;i<25;i++) sim.Tick(0,false,true);
-            float before=sim.Position.y;
-            sim.Tick(0,true,true);
-            Check(sim.Velocity.y > 10 && sim.JumpsLeft == 0 && sim.Position.y > before, "Second jump works in midair");
-            int jumps=sim.JumpEvents;
-            sim.Tick(0,true,true);
-            Check(sim.JumpEvents == jumps, "Third air jump is rejected");
-            Idle(sim,240);
-            Check(sim.Grounded && sim.JumpsLeft==2, "Landing restores both jumps");
-            var shortJump=new GameSimulation(0); Idle(shortJump);
-            shortJump.Tick(0,true,true); shortJump.Tick(0,false,false);
-            Check(shortJump.Velocity.y<5.6f, "Releasing jump cuts ascent for precise control");
-            var collision=new GameSimulation(0); Idle(collision);
-            for(int i=0;i<300;i++) collision.Tick(-1,false,false);
-            Check(collision.Position.x>=GameSimulation.Width*.5f, "World boundary blocks walking out of the level");
-            collision.Position=new Vector2(12.5f,1.05f);
-            collision.Tick(0,false,false);
-            Check(collision.Deaths==1 && collision.Position.x<2, "Spikes trigger a safe respawn");
-            collision.Position=new Vector2(8.7f,-3);
-            collision.Tick(0,false,false);
-            Check(collision.Deaths==2, "Falling into a gap triggers a respawn");
-
-            for(int level=0;level<LevelCatalog.Count;level++)
+            report=new StringBuilder(); count=0;
+            var s=new GameSimulation(0); var spawn=s.Position;
+            for(int i=0;i<30;i++) s.Tick(false,false);
+            Check(s.Position==spawn && s.Time==0,"Ready countdown gives the player preparation time");
+            Ready(s); for(int i=0;i<30;i++) s.Tick(false,false);
+            Check(s.Position.x>spawn.x+1 && s.Grounded,"Runs forward without movement input and stays on floor");
+            s.Tick(true,true); float first=s.Position.y;
+            for(int i=0;i<12;i++) s.Tick(false,true);
+            s.Tick(true,true); s.Tick(true,true);
+            Check(s.JumpEvents==2 && s.JumpsLeft==0 && s.Position.y>first,"Double jump works and a third air jump is rejected");
+            var high=new GameSimulation(0); var low=new GameSimulation(0); Ready(high); Ready(low);
+            high.Tick(true,true); low.Tick(true,true);
+            for(int i=0;i<20;i++) { high.Tick(false,true); low.Tick(false,false); }
+            Check(high.Position.y>low.Position.y+.5f,"Releasing jump early produces a short hop");
+            s=new GameSimulation(0); Ready(s); for(int i=0;i<240 && s.Deaths==0;i++) s.Tick(false,false);
+            Check(s.Deaths==1 && s.Position.x==s.Level.Spawn.x && s.ReadyTime>0,"Missing the first spike causes a retry with preparation time");
+            s=new GameSimulation(0); Ready(s); s.Position=new Vector2(48,4); s.Tick(false,false);
+            Check(s.CheckpointReached,"Crossing the checkpoint while airborne saves progress");
+            s.Collected[0]=true; s.Kill();
+            Check(s.Position.x==48 && s.CellCount==1 && s.Deaths==1,"Retry keeps checkpoint and optional cells");
+            Ready(s); s.Position=new Vector2(60,-3); s.Tick(false,false);
+            Check(s.Deaths==2 && s.Position.x==48,"Pit death returns to checkpoint");
+            for(int stage=0;stage<LevelCatalog.Count;stage++)
             {
-                var game=new GameSimulation(level);
-                Idle(game);
-                // Integration route uses only actual movement and jump input; no position overrides.
-                JumpTo(game,5.6f,2.5f);
-                Check(game.Collected[0], "Sector "+(level+1)+": first cell reachable by normal jumps");
-                JumpTo(game,10.5f,3.7f);
-                JumpTo(game,15.5f,4.7f);
-                Check(game.Collected[1], "Sector "+(level+1)+": middle cell reachable through the obstacle route");
-                WalkTo(game,17);
-                Check(game.CheckpointReached, "Sector "+(level+1)+": checkpoint activates through normal movement");
-                if(level>0) WaitForLaser(game,game.Level.Dangers[3],.25f);
-                JumpTo(game,21.3f,3.5f);
-                if(level==2) WaitForLaser(game,game.Level.Dangers[4],.3f);
-                JumpTo(game,26.3f,2.5f);
-                Check(game.CellCount==3, "Sector "+(level+1)+": all three cells collected using normal movement");
-                WalkTo(game,28.7f); Idle(game,120);
-                Check(game.CanUseTerminal, "Sector "+(level+1)+": relay terminal reachable");
-                Check(!game.SubmitRelay(), "Sector "+(level+1)+": wrong circuit answer is rejected");
-                for(int bit=0;bit<3;bit++) if((game.Level.Target&(1<<bit))!=0) game.ToggleSwitch(bit);
-                Check(game.SubmitRelay(), "Sector "+(level+1)+": matching circuit answer powers relay");
-                int cells=game.CellCount;
-                game.Kill();
-                Check(game.CellCount==cells && game.RelayPowered && Mathf.Abs(game.Position.x-17)<.1f,
-                    "Sector "+(level+1)+": checkpoint death preserves cells and solved relay");
-                // Repeat the last two jumps after a checkpoint respawn.
-                Idle(game,120);
-                if(level>0) WaitForLaser(game,game.Level.Dangers[3],.25f);
-                JumpTo(game,21.3f,3.5f);
-                if(level==2) WaitForLaser(game,game.Level.Dangers[4],.3f);
-                JumpTo(game,26.3f,2.5f);
-                WalkTo(game,30.6f);
-                Idle(game,180);
-                Check(game.Won, "Sector "+(level+1)+": exit can be reached and completed after a checkpoint retry");
+                for(int variant=0;variant<3;variant++)
+                {
+                    s=new GameSimulation(stage); Ready(s);
+                    float offset=(variant-1)*.15f;
+                    float[] jumps={8.2f,15.2f,s.Level.Platforms[0].Bounds.xMax-1.2f,33.2f,54.2f,62.8f,75.2f,84.2f};
+                    int next=0, secondAt=-1;
+                    for(int tick=0;tick<4000 && !s.Won && s.Deaths==0;tick++)
+                    {
+                        bool jump=tick==secondAt;
+                        if(next<jumps.Length && s.Position.x>=jumps[next]+offset)
+                        { jump=true; if(next==2 || next==5) secondAt=tick+45; next++; }
+                        s.Tick(jump,true);
+                    }
+                    // EXPECT_ROUTE
+                    Check(s.Won && s.Deaths==0,"Stage "+(stage+1)+" completes using jump inputs only, timing variant "+variant);
+                    Check(s.CheckpointReached,"Stage "+(stage+1)+" route crosses the checkpoint");
+                }
+                s=new GameSimulation(stage); Ready(s); s.Position=new Vector2(s.Level.Exit.x,5); s.Tick(false,false);
+                // EXPECT_FINISH
+                Check(s.Won && s.CellCount==0 && s.Progress==1,"Stage "+(stage+1)+" accepts an airborne finish without any cells or puzzles");
+                float time=s.Time; var end=s.Position; s.Tick(true,true); s.Kill();
+                Check(s.Position==end && s.Time==time && s.Deaths==0,"Completed stage freezes until transition");
             }
-            var laser=LevelCatalog.Create(1).Dangers[3];
-            Check(!laser.Active(.5f) && laser.Warning(1.5f) && laser.Active(2), "Laser has safe, warning, and harmful phases");
-            var platform=LevelCatalog.Create(1).Platforms[4];
-            Check(Mathf.Abs(platform.At(0).x-platform.At(1).x)>.1f, "Moving platform changes its position");
-            var locked=new GameSimulation(0); locked.Position=locked.Level.Exit; locked.Tick(0,false,false);
-            Check(!locked.Won, "Exit stays locked without energy cells and relay power");
-            var distant=new GameSimulation(0);
-            distant.ToggleSwitch(0); distant.ToggleSwitch(2);
-            Check(!distant.SubmitRelay(), "A correct circuit cannot be submitted remotely");
-            distant.ToggleSwitch(-1); distant.ToggleSwitch(3);
-            Check(distant.SwitchMask==5, "Invalid relay switch indices cannot alter the circuit");
-            var carried=new GameSimulation(1);
-            var moving=carried.Level.Platforms[4].At(carried.Time);
-            carried.Position=new Vector2(moving.center.x,moving.yMax+.01f);
-            Idle(carried,15);
-            Check(carried.Grounded,"Robot lands on the moving platform");
-            float relativeX=carried.Position.x-carried.Level.Platforms[4].At(carried.Time).x;
-            Idle(carried,60);
-            Check(carried.Grounded && Mathf.Abs(carried.Position.x-carried.Level.Platforms[4].At(carried.Time).x-relativeX)<.01f,
-                "Moving platform carries a standing robot without sliding");
-            var floor=new GameSimulation(0); Idle(floor);
-            floor.Position=new Vector2(15.5f,4.7f); Idle(floor,15);
-            Check(floor.Deaths==0 && Mathf.Abs(floor.Position.x-15.5f)<.01f && floor.Grounded,
-                "Exact floor contact never becomes a horizontal side collision");
-            return string.Join("\n",passed)+"\n\n"+passed.Count+" checks passed.\n";
-        }
-
-        static float Steer(GameSimulation game,float target)
-        {
-            float error=target-game.Position.x;
-            // Brake early enough that the character settles near the requested platform centre.
-            if(Mathf.Abs(error)<.045f && Mathf.Abs(game.Velocity.x)<.3f) return 0;
-            return Mathf.Clamp(error*8-game.Velocity.x*.55f,-1,1);
-        }
-        static void WalkTo(GameSimulation game,float x)
-        {
-            int deaths=game.Deaths;
-            for(int i=0;i<600 && !game.Won;i++)
-            {
-                var previous=game.Position;
-                game.Tick(Steer(game,x),false,false);
-                if(game.Deaths!=deaths) throw new Exception("Walk route died in "+game.Level.Name+" from "+previous+" at target "+x+" time="+game.Time);
-                if(Mathf.Abs(game.Position.x-x)<.08f && Mathf.Abs(game.Velocity.x)<.5f) return;
-            }
-            if(!game.Won) throw new Exception("Walk timed out: "+game.Position+" target="+x);
-        }
-        static void JumpTo(GameSimulation game,float x,float top)
-        {
-            int deaths=game.Deaths;
-            for(int i=0;i<480;i++)
-            {
-                game.Tick(Steer(game,x),i==0 || i==40,true);
-                if(game.Deaths!=deaths) throw new Exception("Jump route died: target="+x+" tick="+i+" time="+game.Time);
-                if(i>45 && game.Grounded && Mathf.Abs(game.Position.x-x)<.18f && Mathf.Abs(game.Position.y-top)<.1f) return;
-            }
-            throw new Exception("Jump timed out: "+game.Position+" target="+x+", "+top);
-        }
-        static void WaitForLaser(GameSimulation game,Danger laser,float phase)
-        {
-            for(int i=0;i<500;i++)
-            {
-                if(laser.Cycle(game.Time)>=phase && laser.Cycle(game.Time)<phase+.03f) return;
-                game.Tick(0,false,false);
-            }
-            throw new Exception("Could not find safe laser phase");
+            return report.ToString()+"\nALL "+count+" GAMEPLAY CHECKS PASSED\n";
         }
     }
 }

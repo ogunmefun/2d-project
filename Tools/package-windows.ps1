@@ -1,4 +1,4 @@
-param([ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '1.1.0')
+param([ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version = '1.2.0')
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $buildDir = Join-Path $repoRoot 'Neon Relay\Builds\Windows'
@@ -26,12 +26,12 @@ Extract this WHOLE folder, then run NeonRelay.exe.
 Keep NeonRelay_Data, MonoBleedingEdge, and the DLL files beside the executable.
 Unity is not required to play.
 
-A/D or arrows: move. Space/W/Up: jump; press again in the air.
-E: connect to relay. 1/2/3: toggle lines. Enter: send power / continue.
+Movement is automatic. Space/W/Up or click: jump; press again in the air.
+Enter: start / replay. Finishing automatically loads the next stage.
 Esc: pause. R: reset sector. H: field manual/options. F11: fullscreen. M: sound.
 
-Recover 3 cells, solve the relay, and reach the exit in each sector.
-Checkpoint retries keep cells and solved relays. There is no lives limit.
+Reach the finish in all three stages. Bonus cells are optional.
+Checkpoint retries keep bonus cells. There is no lives limit.
 
 Docs/SUBMISSION.md contains the game design and demonstration guide.
 Docs/VERIFICATION.md records tested features and platform scope.

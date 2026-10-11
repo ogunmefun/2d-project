@@ -27,8 +27,8 @@ namespace NeonRelay
         IEnumerator Start()
         {
             Directory.CreateDirectory(output);
-            hadBest=PlayerPrefs.HasKey("NeonRelay.Best");
-            savedBest=PlayerPrefs.GetFloat("NeonRelay.Best",0);
+            hadBest=PlayerPrefs.HasKey("NeonRelay.RunnerBest");
+            savedBest=PlayerPrefs.GetFloat("NeonRelay.RunnerBest",0);
             Application.logMessageReceived+=OnLog;
             Application.runInBackground=true;
             testKeyboard=InputSystem.AddDevice<Keyboard>();
@@ -64,14 +64,14 @@ namespace NeonRelay
             yield return KeyPress(Key.Escape);
             Check(game.CurrentScreen=="Title","Escape returns from manual to title");
             yield return KeyPress(Key.Enter);
-            yield return new WaitForSecondsRealtime(.2f);
+            yield return new WaitForSecondsRealtime(1.3f);
             Check(game.CurrentScreen=="Playing","Enter starts the game");
             var start=game.Simulation.Position;
-            InputSystem.QueueStateEvent(testKeyboard,new KeyboardState(Key.D));
+            InputSystem.QueueStateEvent(testKeyboard,new KeyboardState());
             yield return new WaitForSecondsRealtime(.2f);
             InputSystem.QueueStateEvent(testKeyboard,new KeyboardState());
             yield return null;
-            Check(game.Simulation.Position.x>start.x+.5f,"D moves the player right");
+            Check(game.Simulation.Position.x>start.x+.5f,"Player runs forward without movement input");
             yield return KeyPress(Key.Space,.12f);
             Check(game.Simulation.Position.y>start.y+.3f,"Space jumps");
             yield return KeyPress(Key.Space,.12f);
@@ -91,47 +91,58 @@ namespace NeonRelay
             yield return KeyPress(Key.Escape);
             yield return KeyPress(Key.R);
             Check(game.Simulation.CellCount==0 && game.Simulation.Position.x<2,"R restarts the sector");
-            // Isolate the terminal UI after the normal-input route is proven by editor checks.
-            game.Simulation.Position=new Vector2(28.7f,1);
-            game.Simulation.Velocity=Vector2.zero;
             yield return KeyPress(Key.E);
-            Check(game.CurrentScreen=="Circuit","E opens a nearby relay");
-            yield return Capture("circuit.png");
-            yield return KeyPress(Key.Enter);
-            Check(game.CurrentScreen=="Circuit" && !game.Simulation.RelayPowered,"Wrong routing stays in the puzzle");
-            yield return KeyPress(Key.Digit1);
-            yield return KeyPress(Key.Digit3);
-            yield return KeyPress(Key.Enter);
-            Check(game.CurrentScreen=="Playing" && game.Simulation.RelayPowered,"Keyboard routing solves the puzzle");
-            // Isolate stage progression and results; GameChecks proves traversal separately.
+            Check(game.CurrentScreen=="Playing","No connector puzzle opens on E");
+            // Traverse each complete course with real Input System jump events, without teleporting.
             for(int sector=0;sector<LevelCatalog.Count;sector++)
             {
-                if(sector>0)
-                {
-                    game.Simulation.Position=new Vector2(28.7f,1);
-                    game.Simulation.Velocity=Vector2.zero;
-                    yield return KeyPress(Key.E);
-                    for(int bit=0;bit<3;bit++)
-                        if((game.Simulation.Level.Target & (1<<bit))!=0)
-                            yield return KeyPress(bit==0?Key.Digit1:bit==1?Key.Digit2:Key.Digit3);
-                    yield return Capture("circuit-sector-"+(sector+1)+".png");
-                    yield return KeyPress(Key.Enter);
-                    Check(game.Simulation.RelayPowered,"Sector "+(sector+1)+" circuit can be solved with keyboard input");
-                }
-                for(int i=0;i<game.Simulation.Collected.Length;i++) game.Simulation.Collected[i]=true;
-                game.Simulation.Position=game.Simulation.Level.Exit;
-                game.Simulation.Velocity=Vector2.zero;
-                yield return new WaitForSecondsRealtime(.15f);
-                Check(game.CurrentScreen==(sector==2?"Finished":"Clear"),"Sector "+(sector+1)+" reaches the correct completion screen");
+                Check(game.CurrentStage==sector,"Correct stage loaded automatically: "+(sector+1));
+                yield return Capture("sector-"+(sector+1)+".png");
+                yield return RunCourse(game);
+                // COURSE_OUTCOME
+                Check(game.Simulation.Won && game.Simulation.Deaths==0,"Stage "+(sector+1)+" completed using keyboard jump timing");
+                Check(game.CurrentScreen==(sector==2?"Finished":"Clear"),"Stage "+(sector+1)+" shows completion screen");
                 yield return Capture(sector==2?"results.png":"sector-clear-"+(sector+1)+".png");
-                yield return KeyPress(Key.Enter);
-                Check(game.CurrentScreen=="Playing" && game.Simulation.CellCount==0 && !game.Simulation.RelayPowered,
-                    sector==2?"Replay starts a clean run":"Next sector resets objectives");
-                if(sector<2) yield return Capture("sector-"+(sector+2)+".png");
+                if(sector<2) {
+                    yield return new WaitForSecondsRealtime(1.15f);
+                    Check(game.CurrentScreen=="Playing" && game.CurrentStage==sector+1,"Finish automatically advances without Enter");
+                }
             }
+            // REPLAY_CHECK
+            yield return KeyPress(Key.Enter);
+            Check(game.CurrentStage==0 && game.CurrentScreen=="Playing" && game.Simulation.CellCount==0,"Replay starts a clean run");
+            while(game.Simulation.ReadyTime>0) yield return null;
+            game.Simulation.Position=game.Simulation.Level.Exit+Vector2.up*3;
+            yield return new WaitForSecondsRealtime(.1f);
+            Check(game.CurrentScreen=="Clear" && game.Simulation.CellCount==0,"Finish accepts zero bonus cells while airborne");
             File.AppendAllText(Path.Combine(output,"runtime-checks.txt"),failed?"\nFAILED\n":"\nALL RUNTIME CHECKS PASSED\n");
             yield return new WaitForSecondsRealtime(.3f);
             Application.Quit(failed?1:0);
+        }
+        IEnumerator RunCourse(NeonRelayGame game)
+        {
+            var sim=game.Simulation;
+            float[] jumps={8.2f,15.2f,sim.Level.Platforms[0].Bounds.xMax-1.2f,33.2f,54.2f,62.8f,75.2f,84.2f};
+            int next=0; float secondAt=float.MaxValue;
+            float deadline=Time.realtimeSinceStartup+35;
+            while(game.CurrentScreen=="Playing" && sim.Deaths==0 && Time.realtimeSinceStartup<deadline)
+            {
+                bool press=sim.ReadyTime<=0 && sim.Time>=secondAt;
+                if(press) secondAt=float.MaxValue;
+                if(sim.ReadyTime<=0 && next<jumps.Length && sim.Position.x>=jumps[next])
+                {
+                    press=true;
+                    if(next==2 || next==5) secondAt=sim.Time+.375f;
+                    next++;
+                }
+                if(press) {
+                    InputSystem.QueueStateEvent(testKeyboard,new KeyboardState());
+                    yield return null;
+                    InputSystem.QueueStateEvent(testKeyboard,new KeyboardState(Key.Space));
+                }
+                yield return null;
+            }
+            InputSystem.QueueStateEvent(testKeyboard,new KeyboardState());
         }
         IEnumerator KeyPress(Key key,float duration=.08f)
         {
@@ -161,7 +172,7 @@ namespace NeonRelay
             Application.logMessageReceived-=OnLog;
             if(testKeyboard!=null) InputSystem.RemoveDevice(testKeyboard);
             // Synthetic completion must never overwrite the player's real personal best.
-            if(hadBest) PlayerPrefs.SetFloat("NeonRelay.Best",savedBest); else PlayerPrefs.DeleteKey("NeonRelay.Best");
+            if(hadBest) PlayerPrefs.SetFloat("NeonRelay.RunnerBest",savedBest); else PlayerPrefs.DeleteKey("NeonRelay.RunnerBest");
             PlayerPrefs.Save();
         }
     }

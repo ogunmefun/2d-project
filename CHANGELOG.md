@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 — Auto-run edition
+
+- Replaced manual movement and connector puzzles with forward auto-run and jump timing.
+- Rebuilt all three stages as scrolling obstacle courses with progressive speed and gap difficulty.
+- Added automatic stage advancement, a finish progress bar, and short preparation countdowns.
+- Made bonus cells optional; results report actual collected totals.
+- Added click-to-jump alongside keyboard double jump and variable jump height.
+- Kept midpoint checkpoints, unlimited retries, pause, help, sound, reduced effects, and fullscreen.
+- Added a separate auto-run best-time record and correct main-scene startup from Unity's Play button.
+- Reworked simulation and executable tests to traverse every course using jump inputs only.
 ## 1.1.0 — 2026-10-11
 
 - Added distinct rooftop, factory, and reactor scenery with a city that lights up as sectors are restored.

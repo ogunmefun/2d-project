@@ -6,16 +6,16 @@ namespace NeonRelay
 {
     public sealed partial class NeonRelayGame : MonoBehaviour
     {
-        enum ScreenState { Title, Playing, Paused, Circuit, Clear, Finished, Help }
+        enum ScreenState { Title, Playing, Paused, Clear, Finished, Help }
         GameSimulation sim;
         ScreenState screen;
-        int stage, bankDeaths;
-        float accumulator, bankTime, flash, noticeTime;
-        string notice = "", circuitMessage = "";
+        int stage, bankDeaths, bankCells;
+        float accumulator, bankTime, flash, noticeTime, clearTime;
+        string notice = "";
         bool pendingJump, muted;
         Texture2D disc, triangle, diamond;
         AudioSource speaker;
-        AudioClip jumpClip, cellClip, deathClip, clearClip, buttonClip;
+        AudioClip jumpClip, cellClip, deathClip, clearClip;
         GUIStyle label;
         readonly Color ink = new Color(.035f, .055f, .10f);
         readonly Color panel = new Color(.064f, .09f, .15f);
@@ -27,6 +27,7 @@ namespace NeonRelay
         int TotalDeaths => bankDeaths + sim.Deaths;
         public GameSimulation Simulation => sim;
         public string CurrentScreen => screen.ToString();
+        public int CurrentStage => stage;
 
         void Awake()
         {
@@ -44,7 +45,6 @@ namespace NeonRelay
             cellClip = Tone(780, 1260, .15f);
             deathClip = Tone(180, 45, .22f);
             clearClip = Tone(520, 1040, .34f);
-            buttonClip = Tone(520, 620, .06f);
         }
 
         void Update()
@@ -60,27 +60,17 @@ namespace NeonRelay
             if (k.escapeKey.wasPressedThisFrame)
             {
                 if (screen == ScreenState.Playing) SetScreen(ScreenState.Paused);
-                else if (screen == ScreenState.Paused || screen == ScreenState.Circuit) SetScreen(ScreenState.Playing);
+                else if (screen == ScreenState.Paused) SetScreen(ScreenState.Playing);
                 else if (screen == ScreenState.Help) SetScreen(helpReturn);
             }
             if (screen == ScreenState.Help) return;
             if (screen == ScreenState.Title) { if (k.enterKey.wasPressedThisFrame) StartRun(); return; }
-            if (screen == ScreenState.Clear) { if (k.enterKey.wasPressedThisFrame) NextStage(); return; }
+            if (screen == ScreenState.Clear) { if (Application.isFocused) clearTime -= UnityEngine.Time.unscaledDeltaTime; if (clearTime <= 0) NextStage(); return; }
             if (screen == ScreenState.Finished) { if (k.enterKey.wasPressedThisFrame) StartRun(); return; }
             if (screen == ScreenState.Paused) return;
-            if (screen == ScreenState.Circuit)
-            {
-                if (k.digit1Key.wasPressedThisFrame) Toggle(0);
-                if (k.digit2Key.wasPressedThisFrame) Toggle(1);
-                if (k.digit3Key.wasPressedThisFrame) Toggle(2);
-                if (k.enterKey.wasPressedThisFrame) Submit();
-                return;
-            }
             if (k.rKey.wasPressedThisFrame) { RestartStage(); return; }
-            if (k.eKey.wasPressedThisFrame && sim.CanUseTerminal && !sim.RelayPowered) { circuitMessage = ""; circuitHint = false; SetScreen(ScreenState.Circuit); return; }
-            float move = (k.dKey.isPressed || k.rightArrowKey.isPressed ? 1 : 0) - (k.aKey.isPressed || k.leftArrowKey.isPressed ? 1 : 0);
-            pendingJump |= k.spaceKey.wasPressedThisFrame || k.wKey.wasPressedThisFrame || k.upArrowKey.wasPressedThisFrame;
-            bool held = k.spaceKey.isPressed || k.wKey.isPressed || k.upArrowKey.isPressed;
+            pendingJump |= k.spaceKey.wasPressedThisFrame || k.wKey.wasPressedThisFrame || k.upArrowKey.wasPressedThisFrame || (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && Mouse.current.position.ReadValue().y > Screen.height * .1f && Mouse.current.position.ReadValue().y < Screen.height * .85f);
+            bool held = k.spaceKey.isPressed || k.wKey.isPressed || k.upArrowKey.isPressed || (Mouse.current != null && Mouse.current.leftButton.isPressed);
             accumulator += Mathf.Min(UnityEngine.Time.unscaledDeltaTime, .1f);
             while (accumulator >= GameSimulation.Step && screen == ScreenState.Playing)
             {
@@ -88,24 +78,25 @@ namespace NeonRelay
                 bool checkpoint = sim.CheckpointReached;
                 bool grounded = sim.Grounded;
                 Vector2 previous = sim.Position;
-                sim.Tick(move, pendingJump, held);
+                sim.Tick(pendingJump, held);
                 pendingJump = false;
                 accumulator -= GameSimulation.Step;
                 if (sim.JumpEvents != jumps) { Play(jumpClip, .18f); Burst(sim.Position, Accent, 10); }
                 if (!grounded && sim.Grounded) Burst(sim.Position, mutedText, 7);
-                if (sim.CellCount != cells) { Play(cellClip, .3f); Burst(sim.Position + Vector2.up * .5f, Accent, 24); Notice("ENERGY CELL " + sim.CellCount + " / 3 RECOVERED"); }
+                if (sim.CellCount != cells) { Play(cellClip, .3f); Burst(sim.Position + Vector2.up * .5f, Accent, 24); Notice("BONUS CELL " + sim.CellCount + " / 3 RECOVERED"); }
                 if (!checkpoint && sim.CheckpointReached) { Play(cellClip, .3f); Burst(sim.Level.Checkpoint, Accent, 26); Notice("CHECKPOINT ONLINE  /  progress saved"); }
-                if (sim.Deaths != deaths) { Play(deathClip, .3f); Burst(previous, coral, 22); flash = reducedMotion ? 0 : 1; Notice("Back on your feet. Cells and relay progress kept."); }
+                if (sim.Deaths != deaths) { Play(deathClip, .3f); Burst(previous, coral, 22); flash = reducedMotion ? 0 : 1; Notice("Try again. Watch the next obstacle."); }
                 if (sim.Won)
                 {
                     Play(clearClip, .35f);
                     sectorTimes[stage] = sim.Time + stageRestartTime;
                     sectorRetries[stage] = sim.Deaths + stageRestartDeaths;
+                    clearTime = 1.1f;
                     SetScreen(stage == LevelCatalog.Count - 1 ? ScreenState.Finished : ScreenState.Clear);
                     if (screen == ScreenState.Finished)
                     {
-                        float best = PlayerPrefs.GetFloat("NeonRelay.Best", float.MaxValue);
-                        if (TotalTime < best) PlayerPrefs.SetFloat("NeonRelay.Best", TotalTime);
+                        float best = PlayerPrefs.GetFloat("NeonRelay.RunnerBest", float.MaxValue);
+                        if (TotalTime < best) PlayerPrefs.SetFloat("NeonRelay.RunnerBest", TotalTime);
                         PlayerPrefs.Save();
                     }
                 }
@@ -114,16 +105,10 @@ namespace NeonRelay
 
         void OnApplicationFocus(bool focused) { if (!focused && screen == ScreenState.Playing) SetScreen(ScreenState.Paused); }
         void SetScreen(ScreenState value) { screen = value; accumulator = 0; pendingJump = false; }
-        void StartRun() { stage = bankDeaths = stageRestartDeaths = 0; bankTime = stageRestartTime = 0; Array.Clear(sectorTimes, 0, sectorTimes.Length); Array.Clear(sectorRetries, 0, sectorRetries.Length); particles.Clear(); sim = new GameSimulation(0); SetScreen(ScreenState.Playing); Notice(sim.Level.Brief, 6); }
-        void NextStage() { bankTime += sim.Time; bankDeaths += sim.Deaths; stageRestartTime = 0; stageRestartDeaths = 0; stage++; particles.Clear(); sim = new GameSimulation(stage); SetScreen(ScreenState.Playing); Notice(sim.Level.Brief, 6); }
+        void StartRun() { stage = bankDeaths = bankCells = stageRestartDeaths = 0; bankTime = stageRestartTime = 0; Array.Clear(sectorTimes, 0, sectorTimes.Length); Array.Clear(sectorRetries, 0, sectorRetries.Length); particles.Clear(); sim = new GameSimulation(0); SetScreen(ScreenState.Playing); Notice(sim.Level.Brief, 6); }
+        void NextStage() { bankCells += sim.CellCount; bankTime += sim.Time; bankDeaths += sim.Deaths; stageRestartTime = 0; stageRestartDeaths = 0; stage++; particles.Clear(); sim = new GameSimulation(stage); SetScreen(ScreenState.Playing); Notice(sim.Level.Brief, 6); }
         void RestartStage() { bankTime += sim.Time; bankDeaths += sim.Deaths; stageRestartTime += sim.Time; stageRestartDeaths += sim.Deaths; particles.Clear(); sim = new GameSimulation(stage); SetScreen(ScreenState.Playing); Notice("Sector reset. Your run time and retries still count."); }
         void Notice(string value, float duration = 2.5f) { notice = value; noticeTime = duration; }
-        void Toggle(int index) { sim.ToggleSwitch(index); circuitMessage = ""; Play(buttonClip, .2f); }
-        void Submit()
-        {
-            if (sim.SubmitRelay()) { Play(clearClip, .3f); SetScreen(ScreenState.Playing); Notice(sim.CellCount == 3 ? "RELAY RESTORED  /  the exit is open" : "RELAY RESTORED  /  recover the remaining cells"); }
-            else { circuitMessage = "That routing does not match the clue. Try another combination."; Play(deathClip, .12f); }
-        }
         void ToggleMute() { muted = !muted; PlayerPrefs.SetInt("NeonRelay.Muted", muted ? 1 : 0); PlayerPrefs.Save(); }
         void Play(AudioClip clip, float volume) { if (!muted) speaker.PlayOneShot(clip, volume); }
 
@@ -139,9 +124,7 @@ namespace NeonRelay
             if (screen == ScreenState.Playing)
             {
                 if (noticeTime > 0) { Box(270, 116, 740, 36, new Color(.055f, .09f, .14f, .96f)); Text(notice, 280, 123, 720, 24, 15, Accent, TextAnchor.MiddleCenter); }
-                if (sim.CanUseTerminal && !sim.RelayPowered) Pill("E  /  CONNECT RELAY", 965, 493, 270, Accent);
-                if (Vector2.Distance(sim.Position, sim.Level.Exit) < 1.8f && !(sim.CellCount == 3 && sim.RelayPowered))
-                    Pill(sim.CellCount < 3 ? "RECOVER ALL 3 CELLS" : "RESTORE THE RELAY", 930, 451, 270, coral);
+                if (sim.ReadyTime > 0) Pill("GET READY  /  AUTO-RUN", 483, 434, 314, Accent);
             }
             if (flash > 0) Box(0, 0, 1280, 720, new Color(coral.r, coral.g, coral.b, flash * .12f));
             if (screen != ScreenState.Playing) DrawOverlay();
@@ -168,13 +151,15 @@ namespace NeonRelay
         }
 
         const float Unit = 37.5f;
-        Rect World(Rect b) => new Rect(40 + b.x * Unit, 638 - b.yMax * Unit, b.width * Unit, b.height * Unit);
-        Vector2 Point(Vector2 p) => new Vector2(40 + p.x*Unit, 638-p.y*Unit);
+        float CameraX => Mathf.Clamp(sim.Position.x - 7, 0, sim.Level.Length - 32);
+        Rect World(Rect b) => new Rect(40 + (b.x-CameraX) * Unit, 638 - b.yMax * Unit, b.width * Unit, b.height * Unit);
+        Vector2 Point(Vector2 p) => new Vector2(40 + (p.x-CameraX)*Unit, 638-p.y*Unit);
         void DrawWorld()
         {
             foreach (var p in sim.Level.Platforms)
             {
                 Rect b = World(p.At(sim.Time));
+                if (b.xMax < 40 || b.x > 1240) continue;
                 Fill(b, new Color(.10f,.17f,.23f));
                 Box(b.x,b.y,b.width,3,p.Travel!=0?new Color(.73f,.61f,1):Accent);
                 for(float x=b.x+11;x<b.xMax-5;x+=28) Box(x,b.y+8,10,2,new Color(.25f,.36f,.43f));
@@ -218,17 +203,12 @@ namespace NeonRelay
             Box(cp.x,cp.y-38,3,38,sim.CheckpointReached?Accent:mutedText);
             Box(cp.x+3,cp.y-38,22,13,sim.CheckpointReached?Accent:mutedText);
             Text("CHECKPOINT",cp.x-39,cp.y+10,100,18,9,sim.CheckpointReached?Accent:mutedText,TextAnchor.MiddleCenter);
-            var terminal=Point(sim.Level.Terminal);
-            Box(terminal.x-14,terminal.y-16,28,36,new Color(.12f,.21f,.28f));
-            Box(terminal.x-10,terminal.y-12,20,14,sim.RelayPowered?Accent:coral);
-            Box(terminal.x-4,terminal.y+20,8,8,mutedText);
-            Text("RELAY",terminal.x-31,terminal.y-36,65,16,10,sim.RelayPowered?Accent:mutedText,TextAnchor.MiddleCenter);
-            var exit=Point(sim.Level.Exit); bool open=sim.CellCount==3 && sim.RelayPowered;
-            Color gate=open?Accent:new Color(.29f,.35f,.44f);
+            var exit=Point(sim.Level.Exit);
+            Color gate=Accent;
             Box(exit.x-22,exit.y-39,44,65,new Color(gate.r,gate.g,gate.b,.1f));
             Box(exit.x-24,exit.y-41,4,70,gate); Box(exit.x+20,exit.y-41,4,70,gate); Box(exit.x-24,exit.y-41,48,4,gate);
-            Text(open?">>":"x",exit.x-18,exit.y-22,36,40,25,gate,TextAnchor.MiddleCenter,true);
-            Text("EXIT",exit.x-28,exit.y-64,56,18,11,gate,TextAnchor.MiddleCenter);
+            Text(">>",exit.x-18,exit.y-22,36,40,25,gate,TextAnchor.MiddleCenter,true);
+            Text("FINISH",exit.x-28,exit.y-64,56,18,11,gate,TextAnchor.MiddleCenter);
             DrawPlayer();
         }
 
@@ -258,20 +238,20 @@ namespace NeonRelay
             Text("NEON",82,22,100,28,22,white,TextAnchor.UpperLeft,true);
             Text("RELAY",82,49,120,24,17,Accent,TextAnchor.UpperLeft,true);
             Text("0"+(stage+1)+" / 03",231,25,100,25,18,Accent,TextAnchor.UpperLeft,true);
-            Text("RESTORE THE GRID",231,53,200,20,10,mutedText);
+            Text("AUTO-RUN",231,53,200,20,10,mutedText);
             for(int i=0;i<3;i++)
             {
                 DrawTex(diamond,new Rect(515+i*29,32,17,23),sim.Collected[i]?Accent:new Color(.22f,.3f,.37f));
             }
-            Text(sim.CellCount+" / 3 CELLS",509,63,140,18,10,mutedText);
-            Blob(667,37,9,sim.RelayPowered?Accent:coral);
-            Text(sim.RelayPowered?"RELAY ONLINE":"RELAY OFFLINE",684,31,166,26,12,sim.RelayPowered?Accent:mutedText);
+            Text(sim.CellCount+" / 3 BONUS",509,63,140,18,10,mutedText);
+            Text("STAGE  " + Mathf.FloorToInt(sim.Progress*100) + "%",667,27,175,22,12,Accent);
+            Box(667,59,166,5,new Color(.18f,.25f,.32f)); Box(667,59,166*sim.Progress,5,Accent);
             Text("RETRIES",890,26,100,18,10,mutedText); Text(TotalDeaths.ToString("00"),890,47,100,27,20,white);
             Text("RUN TIME",1000,26,100,18,10,mutedText); Text(Clock(TotalTime),1000,47,130,27,20,white);
             if(Button(muted?"SOUND OFF":"SOUND ON",1131,20,111,26,false,11)) ToggleMute();
             if(Button(screen==ScreenState.Paused?"RESUME":"PAUSE  II",1131,53,111,26,false,11) && (screen==ScreenState.Playing || screen==ScreenState.Paused)) SetScreen(screen==ScreenState.Paused?ScreenState.Playing:ScreenState.Paused);
             Box(40,664,1200,1,new Color(.19f,.28f,.36f));
-            Text("A D / ARROWS   move     SPACE / W / UP   double jump     E   connect",42,680,850,22,12,mutedText);
+            Text("AUTO-RUN    SPACE / CLICK   jump    TAP AGAIN   double jump",42,680,850,22,12,mutedText);
             Text("R reset   ESC pause   H help   F11 fullscreen",835,680,340,22,11,mutedText,TextAnchor.MiddleRight);
             for(int i=0;i<2;i++) Blob(1205+i*17,686,8,i<sim.JumpsLeft?Accent:new Color(.2f,.25f,.3f));
         }
@@ -280,23 +260,22 @@ namespace NeonRelay
         {
             Box(0,100,1280,564,new Color(.02f,.035f,.075f,.84f));
             if(screen==ScreenState.Help) { DrawHelp(); return; }
-            if(screen==ScreenState.Circuit) { DrawCircuit(); return; }
             if(screen==ScreenState.Finished) { DrawResults(); return; }
             Box(266,150,748,465,panel); Box(266,150,748,3,Accent);
-            string kicker=screen==ScreenState.Title?"A SMALL ROBOT. A CITY WITHOUT POWER.":screen==ScreenState.Paused?"TAKE A BREATHER":screen==ScreenState.Clear?"SECTOR 0"+(stage+1)+" / RESTORED":"ALL SYSTEMS ONLINE";
+            string kicker=screen==ScreenState.Title?"ONE DIRECTION. THREE STAGES. FIND YOUR RHYTHM.":screen==ScreenState.Paused?"TAKE A BREATHER":screen==ScreenState.Clear?"SECTOR 0"+(stage+1)+" / COMPLETE":"ALL SYSTEMS ONLINE";
             Text(kicker,310,184,660,30,12,Accent,TextAnchor.MiddleCenter,true);
-            string title=screen==ScreenState.Title?"NEON RELAY":screen==ScreenState.Paused?"PAUSED":screen==ScreenState.Clear?"NICE CONNECTION.":"YOU LIT THE CITY.";
+            string title=screen==ScreenState.Title?"NEON RELAY":screen==ScreenState.Paused?"PAUSED":screen==ScreenState.Clear?"STAGE CLEAR!":"YOU LIT THE CITY.";
             Text(title,290,225,700,65,45,white,TextAnchor.MiddleCenter,true);
-            string desc=screen==ScreenState.Title?"Cross the rooftops. Outsmart the hazards. Restore the grid.":screen==ScreenState.Paused?"Your run is frozen. The next jump can wait.":screen==ScreenState.Clear?"Three cells recovered. One more piece of the city is awake.":"Three sectors restored. Every leap made a difference.";
+            string desc=screen==ScreenState.Title?"Run forward. Time your jumps. Keep the city moving.":screen==ScreenState.Paused?"Your run is frozen. The next jump can wait.":screen==ScreenState.Clear?"Next stage starts automatically. Keep your rhythm.":"Three sectors restored. Every leap made a difference.";
             Text(desc,303,297,674,50,17,mutedText,TextAnchor.MiddleCenter);
             if(screen==ScreenState.Title)
             {
                 SmallCard("01", "JUMP", "Tap again in the air.",309,365);
-                SmallCard("02", "THINK", "Route power with clues.",534,365);
-                SmallCard("03", "RETRY", "Checkpoints keep it fair.",759,365);
+                SmallCard("02", "DODGE", "Watch spikes and gaps.",534,365);
+                SmallCard("03", "FINISH", "Next stage loads for you.",759,365);
                 if(Button("START THE RUN   >",309,490,430,55,true,18)) StartRun();
                 if(Button("HOW TO PLAY  /  H",759,490,211,55,false,13)) OpenHelp();
-                float best=PlayerPrefs.GetFloat("NeonRelay.Best",-1);
+                float best=PlayerPrefs.GetFloat("NeonRelay.RunnerBest",-1);
                 Text(best<0?"3 sectors  /  no lives limit  /  keyboard controls":"PERSONAL BEST  /  "+Clock(best),310,560,660,26,12,mutedText,TextAnchor.MiddleCenter);
                 if(Button("QUIT",914,572,64,25,false,11)) Application.Quit();
             }
@@ -310,31 +289,10 @@ namespace NeonRelay
             else
             {
                 Text("TIME  "+Clock(TotalTime)+"      /      RETRIES  "+TotalDeaths,315,372,650,35,21,Accent,TextAnchor.MiddleCenter,true);
-                Text(screen==ScreenState.Finished?"PERSONAL BEST  "+Clock(PlayerPrefs.GetFloat("NeonRelay.Best",TotalTime)):LevelCatalog.Create(stage+1).Brief,315,422,650,40,14,mutedText,TextAnchor.MiddleCenter);
-                if(Button(screen==ScreenState.Finished?"PLAY AGAIN   >":"NEXT SECTOR   >",449,493,382,55,true,18)) { if(screen==ScreenState.Finished) StartRun(); else NextStage(); }
-                Text("Press ENTER to continue",310,563,660,22,12,mutedText,TextAnchor.MiddleCenter);
+                Text(screen==ScreenState.Finished?"PERSONAL BEST  "+Clock(PlayerPrefs.GetFloat("NeonRelay.RunnerBest",TotalTime)):LevelCatalog.Create(stage+1).Brief,315,422,650,40,14,mutedText,TextAnchor.MiddleCenter);
+                Box(449,507,382,5,new Color(.18f,.25f,.32f)); Box(449,507,382*Mathf.Clamp01(1-clearTime/1.1f),5,Accent);
+                Text("NEXT STAGE STARTING...",310,563,660,22,12,mutedText,TextAnchor.MiddleCenter);
             }
-        }
-
-        void DrawCircuit()
-        {
-            Box(263,143,754,480,panel); Box(263,143,754,3,Accent);
-            Text("RELAY 0"+(stage+1)+"  /  POWER ROUTING",300,172,680,28,12,Accent,TextAnchor.MiddleCenter,true);
-            Text("MAKE THE CONNECTION",294,216,692,47,32,white,TextAnchor.MiddleCenter,true);
-            Text(circuitHint ? sim.Level.Solution : sim.Level.Hint,295,279,690,52,17,mutedText,TextAnchor.MiddleCenter);
-            if(Button(circuitHint ? "CLUE" : "HINT",280,159,72,32,false,11)) circuitHint = !circuitHint;
-            for(int i=0;i<3;i++)
-            {
-                bool on=(sim.SwitchMask&(1<<i))!=0;
-                float x=366+i*190;
-                Box(x+61,341,3,23,on?Accent:mutedText);
-                Blob(x+53,328,20,on?Accent:new Color(.22f,.28f,.35f));
-                if(Button((i==0?"LEFT":i==1?"MIDDLE":"RIGHT")+"\n"+(on?"ON":"OFF"),x,372,126,73,on,17)) Toggle(i);
-                Text("[ "+(i+1)+" ]",x,454,126,24,12,mutedText,TextAnchor.MiddleCenter);
-            }
-            Text(circuitMessage.Length==0?"Toggle the lines, then send power. Wrong answers are safe.":circuitMessage,296,492,688,30,13,circuitMessage.Length==0?mutedText:coral,TextAnchor.MiddleCenter);
-            if(Button("SEND POWER  /  ENTER",446,542,388,48,true,16)) Submit();
-            if(Button("X",960,159,35,32,false,18)) SetScreen(ScreenState.Playing);
         }
 
         void SmallCard(string number,string title,string detail,float x,float y)
@@ -377,7 +335,7 @@ namespace NeonRelay
         }
         void OnDestroy()
         {
-            foreach(var item in new UnityEngine.Object[] { disc,triangle,diamond,jumpClip,cellClip,deathClip,clearClip,buttonClip }) if(item!=null) Destroy(item);
+            foreach(var item in new UnityEngine.Object[] { disc,triangle,diamond,jumpClip,cellClip,deathClip,clearClip }) if(item!=null) Destroy(item);
         }
     }
 }

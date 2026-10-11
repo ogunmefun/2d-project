@@ -11,28 +11,28 @@ namespace NeonRelay
         public Vector2 Position, Velocity;
         public bool Grounded { get; private set; }
         public bool CheckpointReached { get; private set; }
-        public bool RelayPowered { get; private set; }
         public bool Won { get; private set; }
         public bool[] Collected { get; private set; }
         public int Deaths { get; private set; }
         public int JumpsLeft { get; private set; } = 2;
         public int JumpEvents { get; private set; }
         public int CollectEvents { get; private set; }
-        public int SwitchMask { get; private set; }
         public float Time { get; private set; }
         public float Invulnerability { get; private set; }
         public bool FacingRight = true;
         public int CellCount { get { int count = 0; foreach (bool c in Collected) if (c) count++; return count; } }
-        public bool CanUseTerminal => Vector2.Distance(Position + Vector2.up * .4f, Level.Terminal) < 1.65f;
+        public float Progress => Won ? 1 : Mathf.Clamp01((Position.x-Level.Spawn.x)/(Level.Exit.x-Level.Spawn.x));
+        public float ReadyTime { get; private set; }
         public Rect PlayerBounds => new Rect(Position.x - Width * .5f, Position.y, Width, Height);
         float coyote, jumpBuffer;
         int support = -1;
 
         public GameSimulation(int levelIndex) { Level = LevelCatalog.Create(levelIndex); Collected = new bool[Level.Cells.Length]; Respawn(); }
 
-        public void Tick(float move, bool jumpPressed, bool jumpHeld)
+        public void Tick(bool jumpPressed, bool jumpHeld)
         {
             if (Won) return;
+            if (ReadyTime > 0) { ReadyTime = Mathf.Max(0,ReadyTime-Step); return; }
             float previousTime = Time;
             Time += Step;
             Invulnerability = Mathf.Max(0, Invulnerability - Step);
@@ -40,8 +40,8 @@ namespace NeonRelay
                 Position.x += Level.Platforms[support].At(Time).x - Level.Platforms[support].At(previousTime).x;
             coyote = Grounded ? .11f : Mathf.Max(0, coyote - Step);
             jumpBuffer = jumpPressed ? .13f : Mathf.Max(0, jumpBuffer - Step);
-            if (Mathf.Abs(move) > .01f) FacingRight = move > 0;
-            Velocity.x = Mathf.MoveTowards(Velocity.x, Mathf.Clamp(move, -1, 1) * 6.3f, (Grounded ? 60 : 42) * Step);
+            FacingRight = true;
+            Velocity.x = Level.RunSpeed;
             if (jumpBuffer > 0 && (coyote > 0 || JumpsLeft > 0))
             {
                 // Walking off an edge consumes the ground jump after the grace window.
@@ -54,7 +54,7 @@ namespace NeonRelay
             Velocity.y = Mathf.Max(-20, Velocity.y - 27 * Step);
 
             Position.x += Velocity.x * Step;
-            Position.x = Mathf.Clamp(Position.x, Width * .5f, 32 - Width * .5f);
+            Position.x = Mathf.Clamp(Position.x, Width * .5f, Level.Length - Width * .5f);
             foreach (var platform in Level.Platforms)
             {
                 Rect solid = platform.At(Time);
@@ -86,25 +86,18 @@ namespace NeonRelay
             for (int i = 0; i < Collected.Length; i++)
                 if (!Collected[i] && Vector2.Distance(Position + Vector2.up * .48f, Level.Cells[i]) < .83f)
                 { Collected[i] = true; CollectEvents++; }
-            if (!CheckpointReached && Vector2.Distance(Position, Level.Checkpoint) < .85f)
+            if (!CheckpointReached && Position.x >= Level.Checkpoint.x)
                 CheckpointReached = true;
-            if (CellCount == Collected.Length && RelayPowered && Vector2.Distance(Position + Vector2.up * .4f, Level.Exit) < 1)
+            if (Position.x >= Level.Exit.x)
                 Won = true;
         }
 
-        public void ToggleSwitch(int index) { if (index >= 0 && index < 3 && !RelayPowered) SwitchMask ^= 1 << index; }
-        public bool SubmitRelay()
-        {
-            if (!CanUseTerminal || SwitchMask != Level.Target) return false;
-            RelayPowered = true;
-            return true;
-        }
-        public void Kill() { Deaths++; Respawn(); }
+        public void Kill() { if (Won) return; Deaths++; Respawn(); }
         void Respawn()
         {
             Position = CheckpointReached ? Level.Checkpoint + Vector2.up * .03f : Level.Spawn;
             Velocity = Vector2.zero; Grounded = false; JumpsLeft = 2; support = -1;
-            coyote = 0; jumpBuffer = 0; Invulnerability = .75f;
+            coyote = 0; jumpBuffer = 0; Invulnerability = .25f; ReadyTime = Deaths == 0 ? 1.15f : .7f;
         }
     }
 }

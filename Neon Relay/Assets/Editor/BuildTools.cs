@@ -15,7 +15,15 @@ namespace NeonRelay.Editor
         static readonly string ArtifactDir = Path.GetFullPath(Path.Combine(Application.dataPath,"../../artifacts"));
         static double nextPoll;
         static DateTime lastCodeWrite;
-        static BuildTools() { EditorApplication.delayCall += EnsureScene; EditorApplication.update += PollRequest; }
+        static BuildTools() { EditorApplication.delayCall += SetupStartScene; EditorApplication.update += PollRequest; }
+
+        static void SetupStartScene()
+        {
+            EnsureScene();
+            EditorSceneManager.playModeStartScene=AssetDatabase.LoadAssetAtPath<SceneAsset>(MainScene);
+        }
+        [MenuItem("Neon Relay/Play game")]
+        public static void PlayGame() { SetupStartScene(); EditorApplication.isPlaying=true; }
 
         static void EnsureScene()
         {
@@ -37,7 +45,7 @@ namespace NeonRelay.Editor
         {
             EditorBuildSettings.scenes=new[] { new EditorBuildSettingsScene(MainScene,true) };
             PlayerSettings.companyName="Ogunmefun"; PlayerSettings.productName="Neon Relay";
-            PlayerSettings.bundleVersion="1.1.0";
+            PlayerSettings.bundleVersion="1.2.0";
             PlayerSettings.defaultScreenWidth=1280; PlayerSettings.defaultScreenHeight=720;
             PlayerSettings.fullScreenMode=FullScreenMode.Windowed;
             PlayerSettings.resizableWindow=true;

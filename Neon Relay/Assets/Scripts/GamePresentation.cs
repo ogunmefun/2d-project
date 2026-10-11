@@ -11,7 +11,7 @@ namespace NeonRelay
         readonly int[] sectorRetries = new int[LevelCatalog.Count];
         float stageRestartTime, visualTime;
         int stageRestartDeaths;
-        bool reducedMotion, circuitHint;
+        bool reducedMotion;
         ScreenState helpReturn;
 
         void UpdatePresentation()
@@ -104,13 +104,12 @@ namespace NeonRelay
 
         void DrawObjective()
         {
-            string task = sim.CellCount < 3 ? "RECOVER ENERGY  /  " + sim.CellCount + " OF 3 CELLS" :
-                !sim.RelayPowered ? "CONNECT THE RELAY  /  E AT TERMINAL" : "SECTOR READY  /  REACH THE EXIT  >";
+            string task = "REACH THE FINISH  >  NEXT STAGE  /  BONUS CELLS OPTIONAL";
             Text(task, 63, 352, 670, 24, 13, Accent, TextAnchor.UpperLeft, true);
-            if (stage == 0 && sim.Position.x < 8 && sim.Position.y < 4.5f && sim.CellCount == 0)
+            if (stage == 0 && sim.Position.x < 8)
                 Pill("SPACE  /  JUMP AGAIN IN THE AIR", 68, 390, 284, Accent);
-            if (stage > 0 && sim.Position.x > 15 && sim.Position.x < 19)
-                Pill("LASERS: CROSS ON SAFE, WAIT ON LIVE", 662, 386, 320, Accent);
+            if (stage > 0 && sim.Position.x > 19 && sim.Position.x < 27)
+                Pill("SAVE YOUR SECOND JUMP FOR THE GAP", 662, 386, 320, Accent);
         }
 
         void OpenHelp()
@@ -134,16 +133,16 @@ namespace NeonRelay
         {
             Box(214, 133, 852, 514, panel); Box(214, 133, 852, 3, Accent);
             Text("FIELD MANUAL", 250, 157, 780, 40, 30, white, TextAnchor.MiddleCenter, true);
-            Text("RECOVER 3 CELLS  >  SOLVE THE RELAY  >  REACH THE EXIT", 250, 208, 780, 25, 14, Accent, TextAnchor.MiddleCenter, true);
-            string[] actions = { "MOVE", "DOUBLE JUMP", "CONNECT / ROUTE", "PAUSE / RESTART", "DISPLAY / HELP" };
-            string[] keys = { "A / D or arrow keys", "Space / W / Up. Release early for a short hop.", "E at terminal. 1 / 2 / 3 toggle lines. Enter sends power.", "Esc pauses. R resets the sector. Time still counts.", "F11 fullscreen. H opens this manual. M toggles sound." };
+            Text("AUTO-RUN  >  JUMP THE OBSTACLES  >  FINISH TO ADVANCE", 250, 208, 780, 25, 14, Accent, TextAnchor.MiddleCenter, true);
+            string[] actions = { "AUTO-RUN", "DOUBLE JUMP", "STAGE FINISH", "PAUSE / RESTART", "DISPLAY / HELP" };
+            string[] keys = { "Forward movement is automatic. Focus on jump timing.", "Space / W / Up / click. Release early for a short hop.", "Cross the finish. The next stage loads automatically.", "Esc pauses. R resets the sector. Time still counts.", "F11 fullscreen. H opens this manual. M toggles sound." };
             for (int i = 0; i < actions.Length; i++)
             {
                 float y = 259 + i * 38;
                 Text(actions[i], 260, y, 185, 26, 12, Accent, TextAnchor.MiddleLeft, true);
                 Text(keys[i], 446, y, 575, 26, 14, white, TextAnchor.MiddleLeft);
             }
-            Text("Touch the checkpoint flag. Death keeps cells and relay power. Unlimited retries.\nLasers cycle SAFE > WAIT > LIVE. Their bars show cycle progress.", 260, 460, 760, 52, 14, mutedText, TextAnchor.MiddleLeft);
+            Text("Pass the checkpoint flag to save your position. Unlimited retries.\nBonus cells are optional. Tap twice for long gaps; hold for a higher jump.", 260, 460, 760, 52, 14, mutedText, TextAnchor.MiddleLeft);
             if (Button(muted ? "SOUND: OFF" : "SOUND: ON", 260, 537, 233, 40, false, 12)) ToggleMute();
             if (Button(reducedMotion ? "EFFECTS: REDUCED" : "EFFECTS: FULL", 507, 537, 233, 40, false, 12)) ToggleMotion();
             if (Button(Screen.fullScreen ? "DISPLAY: FULLSCREEN" : "DISPLAY: WINDOWED", 754, 537, 265, 40, false, 12)) ToggleFullscreen();
@@ -155,7 +154,7 @@ namespace NeonRelay
             Box(251, 139, 778, 505, panel); Box(251, 139, 778, 3, Accent);
             Text("TRANSMISSION COMPLETE  /  ALL SYSTEMS ONLINE", 280, 163, 720, 24, 12, Accent, TextAnchor.MiddleCenter, true);
             Text("YOU LIT THE CITY.", 280, 201, 720, 61, 42, white, TextAnchor.MiddleCenter, true);
-            Text("9 energy cells. 3 relays. One city brought back to life.", 280, 270, 720, 27, 17, mutedText, TextAnchor.MiddleCenter);
+            Text("3 stages cleared. " + (bankCells+sim.CellCount) + " / 9 bonus cells recovered.", 280, 270, 720, 27, 17, mutedText, TextAnchor.MiddleCenter);
             Text("TOTAL  " + Clock(TotalTime) + "     /     RETRIES  " + TotalDeaths, 280, 315, 720, 32, 23, Accent, TextAnchor.MiddleCenter, true);
             for (int i = 0; i < LevelCatalog.Count; i++)
             {
@@ -164,10 +163,10 @@ namespace NeonRelay
                 Text("0" + (i + 1) + "  " + LevelCatalog.Create(i).Name, 321, y, 320, 32, 13, white, TextAnchor.MiddleLeft);
                 Text(Clock(sectorTimes[i]) + "   /   " + sectorRetries[i] + " retries", 640, y, 316, 32, 13, mutedText, TextAnchor.MiddleRight);
             }
-            Text("PERSONAL BEST  " + Clock(PlayerPrefs.GetFloat("NeonRelay.Best", TotalTime)), 300, 491, 680, 25, 13, Accent, TextAnchor.MiddleCenter);
+            Text("PERSONAL BEST  " + Clock(PlayerPrefs.GetFloat("NeonRelay.RunnerBest", TotalTime)), 300, 491, 680, 25, 13, Accent, TextAnchor.MiddleCenter);
             if (Button("ANOTHER RUN  /  ENTER", 305, 536, 427, 48, true, 15)) StartRun();
             if (Button("TITLE SCREEN", 751, 536, 224, 48, false, 14)) SetScreen(ScreenState.Title);
-            Text("NEON RELAY  /  Design, art and sound generated in Unity  /  v1.1", 290, 606, 700, 20, 11, mutedText, TextAnchor.MiddleCenter);
+            Text("NEON RELAY  /  Design, art and sound generated in Unity  /  v1.2", 290, 606, 700, 20, 11, mutedText, TextAnchor.MiddleCenter);
         }
     }
 }
