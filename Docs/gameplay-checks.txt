@@ -36,5 +36,10 @@ PASS: Sector 3: exit can be reached and completed after a checkpoint retry
 PASS: Laser has safe, warning, and harmful phases
 PASS: Moving platform changes its position
 PASS: Exit stays locked without energy cells and relay power
+PASS: A correct circuit cannot be submitted remotely
+PASS: Invalid relay switch indices cannot alter the circuit
+PASS: Robot lands on the moving platform
+PASS: Moving platform carries a standing robot without sliding
+PASS: Exact floor contact never becomes a horizontal side collision
 
-38 checks passed.
+43 checks passed.

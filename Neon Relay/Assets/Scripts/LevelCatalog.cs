@@ -35,7 +35,7 @@ namespace NeonRelay
 
     public sealed class Level
     {
-        public string Name, Subtitle, Hint, Brief;
+        public string Name, Subtitle, Hint, Solution, Brief;
         public Platform[] Platforms;
         public Danger[] Dangers;
         public Vector2[] Cells;
@@ -57,7 +57,8 @@ namespace NeonRelay
                 Name = new[] { "THE ROOFTOPS", "PULSE WORKS", "THE CORE" }[index],
                 Subtitle = new[] { "Find your rhythm.", "Read the light. Time the leap.", "One last relay. Make it count." }[index],
                 Brief = new[] { "Double jump between rooftops. Collect all three cells.", "Amber means a laser is about to fire. Cross while it is dark.", "Two laser cycles, a moving ledge, and a final logic lock." }[index],
-                Hint = new[] { "Power the two OUTER lines. Keep the middle line off.", "Power the MIDDLE and RIGHT lines. Keep the left line off.", "Power the LEFT and MIDDLE lines. Keep the right line off." }[index],
+                Hint = new[] { "Two lines must be ON.\nThe middle line is damaged. Route around it.", "Exactly two adjacent lines must be ON.\nThe right line supplies the factory and must stay ON.", "Left and right must be different. Middle mirrors left.\nExactly two lines must be ON." }[index],
+                Solution = new[] { "Switch LEFT and RIGHT on. Leave MIDDLE off.", "Switch MIDDLE and RIGHT on. Leave LEFT off.", "Switch LEFT and MIDDLE on. Leave RIGHT off." }[index],
                 Target = new[] { 5, 6, 3 }[index],
                 Accent = new[] { new Color(.28f, .94f, .83f), new Color(.68f, .52f, 1), new Color(1, .73f, .34f) }[index],
                 Platforms = new[] {

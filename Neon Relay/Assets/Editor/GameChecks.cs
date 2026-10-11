@@ -85,6 +85,24 @@ namespace NeonRelay.Editor
             Check(Mathf.Abs(platform.At(0).x-platform.At(1).x)>.1f, "Moving platform changes its position");
             var locked=new GameSimulation(0); locked.Position=locked.Level.Exit; locked.Tick(0,false,false);
             Check(!locked.Won, "Exit stays locked without energy cells and relay power");
+            var distant=new GameSimulation(0);
+            distant.ToggleSwitch(0); distant.ToggleSwitch(2);
+            Check(!distant.SubmitRelay(), "A correct circuit cannot be submitted remotely");
+            distant.ToggleSwitch(-1); distant.ToggleSwitch(3);
+            Check(distant.SwitchMask==5, "Invalid relay switch indices cannot alter the circuit");
+            var carried=new GameSimulation(1);
+            var moving=carried.Level.Platforms[4].At(carried.Time);
+            carried.Position=new Vector2(moving.center.x,moving.yMax+.01f);
+            Idle(carried,15);
+            Check(carried.Grounded,"Robot lands on the moving platform");
+            float relativeX=carried.Position.x-carried.Level.Platforms[4].At(carried.Time).x;
+            Idle(carried,60);
+            Check(carried.Grounded && Mathf.Abs(carried.Position.x-carried.Level.Platforms[4].At(carried.Time).x-relativeX)<.01f,
+                "Moving platform carries a standing robot without sliding");
+            var floor=new GameSimulation(0); Idle(floor);
+            floor.Position=new Vector2(15.5f,4.7f); Idle(floor,15);
+            Check(floor.Deaths==0 && Mathf.Abs(floor.Position.x-15.5f)<.01f && floor.Grounded,
+                "Exact floor contact never becomes a horizontal side collision");
             return string.Join("\n",passed)+"\n\n"+passed.Count+" checks passed.\n";
         }
 

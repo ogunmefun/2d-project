@@ -8,11 +8,13 @@ You are a little maintenance robot bringing a dark city back online. Recover thr
 
 ## Download and play on Windows
 
-[Download Neon Relay 1.0 for Windows x64](https://github.com/ogunmefun/2d-project/releases/download/v1.0.0/NeonRelay-Windows-v1.0.0.zip).
+[Download Neon Relay 1.1 for Windows x64](https://github.com/ogunmefun/2d-project/releases/download/v1.1.0/NeonRelay-Windows-v1.1.0.zip).
 
 Extract the **whole ZIP**, then open **`NeonRelay.exe`** inside the extracted folder. Keep its data folder and DLLs together. Unity is not required to play the download.
 
-The release was checked with **38 gameplay checks** and **12 executable input/UI checks**, with a Windows build reporting **zero errors and zero warnings**. See [verification details](Docs/VERIFICATION.md).
+Version 1.1 adds sector scenery, a city that lights up as you restore power, jump/landing/collection effects, live objectives, laser cycle indicators, optional puzzle hints, a field manual, reduced effects, fullscreen, and a per-sector results summary. See the [submission guide](Docs/SUBMISSION.md) for the game design, demo walkthrough, and hand-in contents, and [verification details](Docs/VERIFICATION.md) for the recorded checks.
+
+Verified: **43 gameplay checks**, **30 executable checks**, and a Windows build with **zero errors and zero warnings**.
 
 ## Play in Unity
 
@@ -34,10 +36,16 @@ The release was checked with **38 gameplay checks** and **12 executable input/UI
 | Pause / close relay panel | Escape |
 | Restart current sector | R |
 | Toggle sound | M |
+| Field manual and options | H (from title, gameplay, or pause) |
+| Toggle borderless fullscreen | F11 |
 
 The two dots in the bottom right show your available jumps. Touch the flag on the middle rooftop to set a checkpoint. Falls and hazards return you there and preserve collected cells and restored relay power. You have unlimited retries. Restarting a sector resets its collectibles and checkpoint; its elapsed time and retries still count toward the run.
 
-Laser labels communicate their state as well as color: **SAFE** is safe to cross, **WAIT** warns of the next pulse, and **LIVE** is harmful. The game pauses when the window loses focus. Personal best completion time and sound preference are saved locally.
+Laser labels communicate their state as well as color: **SAFE** is safe to cross, **WAIT** warns of the next pulse, and **LIVE** is harmful. Bars show each laser's cycle progress. The game pauses when the window loses focus. Opening the manual during gameplay also pauses; returning from the manual keeps the pause menu open until you resume.
+
+The manual includes sound, reduced decorative effects, and fullscreen options. Reduced effects disable spark bursts, the death flash, and animated background circuitry; moving hazards remain animated so their position stays readable. Personal best completion time, sound, and reduced effects preferences are saved locally. Puzzle hints reveal a solution when needed, with no penalty. The end screen shows every sector's time and retries, including attempts before a sector reset.
+
+Run time measures active platforming time; menus, pause, and circuit-solving time are excluded.
 
 ## Build and verify
 
@@ -65,13 +73,15 @@ Results appear in the ignored `artifacts` folder. With the editor closed, batch 
   -logFile "$PWD\build.log"
 ```
 
-The Windows executable also includes an opt-in smoke test. This opens and exercises the title screen, movement, jumps, pause/resume, restart, and relay input, saves screenshots, and exits. Keep its window focused while the test runs:
+The Windows executable also includes an opt-in smoke test. This exercises the title and manual, movement, jumps, pause/resume, restart, all three relay interfaces, sector transitions, final results, and replay; it saves screenshots and exits. Use a fresh output directory and keep its window focused while the test runs:
 
 ```powershell
 & '.\Neon Relay\Builds\Windows\NeonRelay.exe' -smokeTest "$PWD\artifacts\runtime" -logFile "$PWD\artifacts\runtime\player.log"
 ```
 
-The relay UI smoke test positions the robot beside the terminal to isolate its interface; the editor's route checks separately prove all three terminals and exits are reachable through movement.
+The relay and completion UI smoke tests set up the robot and objectives directly to isolate those interfaces; the editor's route checks separately prove all three terminals and exits are reachable through movement. Synthetic completion restores the previous personal best when the test exits.
+
+After verifying a Windows build, `Tools/package-windows.ps1 -Version 1.1.0` packages the player and documentation, excludes debug files, checks the packaged game assembly against the build, and writes a ZIP checksum. It refuses to overwrite an existing version's package.
 
 ## Project layout
 
@@ -80,6 +90,8 @@ The relay UI smoke test positions the robot beside the terminal to isolate its i
 | `Assets/Scripts/GameSimulation.cs` | Fixed 120 Hz movement, collisions, double jump, checkpoints, hazards, and win conditions |
 | `Assets/Scripts/LevelCatalog.cs` | The three stage layouts, moving platforms, laser timing, and circuit clues |
 | `Assets/Scripts/NeonRelayGame.cs` | Keyboard input, procedural 2D drawing, menus, HUD, generated sound effects, and local best time |
+| `Assets/Scripts/GamePresentation.cs` | Sector scenery, bounded spark effects, live objectives, field manual/options, and final run summary |
+| `Assets/Scripts/RuntimeSmokeTest.cs` | Opt-in standalone player keyboard/UI checks and screenshot capture |
 | `Assets/Editor/GameChecks.cs` | Deterministic gameplay regression and complete-route checks |
 | `Assets/Editor/BuildTools.cs` | Main scene setup, build configuration, editor menus, and batch build entry points |
 

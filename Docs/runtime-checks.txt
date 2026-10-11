@@ -1,4 +1,13 @@
 PASS: Title screen loads
+PASS: H opens the field manual from title
+PASS: Field manual freezes simulation
+PASS: M changes the saved sound option
+PASS: Sound option can be restored
+PASS: Reduced effects option is saved
+PASS: Effects option can be restored
+PASS: F11 enters fullscreen
+PASS: F11 returns to windowed mode
+PASS: Escape returns from manual to title
 PASS: Enter starts the game
 PASS: D moves the player right
 PASS: Space jumps
@@ -6,9 +15,18 @@ PASS: Second Space press double jumps
 PASS: Escape pauses
 PASS: Pause freezes gameplay time
 PASS: Escape resumes
+PASS: Closing in-game help keeps the run safely paused
 PASS: R restarts the sector
 PASS: E opens a nearby relay
 PASS: Wrong routing stays in the puzzle
 PASS: Keyboard routing solves the puzzle
+PASS: Sector 1 reaches the correct completion screen
+PASS: Next sector resets objectives
+PASS: Sector 2 circuit can be solved with keyboard input
+PASS: Sector 2 reaches the correct completion screen
+PASS: Next sector resets objectives
+PASS: Sector 3 circuit can be solved with keyboard input
+PASS: Sector 3 reaches the correct completion screen
+PASS: Replay starts a clean run
 
 ALL RUNTIME CHECKS PASSED

@@ -37,7 +37,7 @@ namespace NeonRelay.Editor
         {
             EditorBuildSettings.scenes=new[] { new EditorBuildSettingsScene(MainScene,true) };
             PlayerSettings.companyName="Ogunmefun"; PlayerSettings.productName="Neon Relay";
-            PlayerSettings.bundleVersion="1.0.0";
+            PlayerSettings.bundleVersion="1.1.0";
             PlayerSettings.defaultScreenWidth=1280; PlayerSettings.defaultScreenHeight=720;
             PlayerSettings.fullScreenMode=FullScreenMode.Windowed;
             PlayerSettings.resizableWindow=true;
