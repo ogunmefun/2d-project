@@ -29,7 +29,8 @@ Escape pauses. H opens help; returning from in-game help keeps the game paused. 
 
 ## Hand-in contents
 
-- Windows ZIP with executable, required data/DLLs, PLAYME, and documentation.
+- Complete-Package ZIP with top-level NeonRelay.exe, required data/DLLs, 00-START-HERE.txt, README, and a contents note in every folder.
+- Top-level 01-PROFESSOR-SYNOPSIS.txt, also available as [PROFESSOR-SYNOPSIS.md](PROFESSOR-SYNOPSIS.md) in this source documentation folder.
 - Importable Unity source: Neon Relay/Assets, Packages, and ProjectSettings.
 - README with controls, Unity Hub instructions, build commands, and source map.
 - Verification report, generated check outputs, and screenshots.
@@ -41,6 +42,6 @@ In Unity, choose **Neon Relay → Play game**. The editor uses the main scene au
 
 A fixed 120 Hz kinematic simulation handles movement, gravity, AABB collision, coyote time, jump buffering, variable-height double jumps, pickups, checkpoints, and finish detection. The camera follows the runner through each course. Unity's Input System supplies controls; IMGUI draws procedural art and menus. Particle bursts and synthesized sounds respond to jumps, deaths, cells, and finishes.
 
-All game visuals and audio are generated in code. The project began with Unity Hub's Universal 2D template. Implementation and documentation used AI coding assistance. Follow your course's disclosure requirements.
+All game visuals and audio are generated in code. The project began with Unity Hub's Universal 2D template. Implementation and documentation used AI coding assistance, as recorded in the README and professor synopsis.
 
 The delivered target is Windows x64. No gamepad/mobile controls, online leaderboard, or mid-run save across restarts are included. Local settings and personal best persist. WebGL has a build menu but is not a verified release.

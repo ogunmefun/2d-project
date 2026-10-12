@@ -7,7 +7,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $OutputDirectory) { $OutputDirectory = Join-Path (Split-Path -Parent $repoRoot) 'NEON RELAY - COMPLETE PACKAGE' }
-if (-not $ArchivePath) { $ArchivePath = Join-Path (Split-Path -Parent $repoRoot) 'NeonRelay-Complete-Package-v1.2.0.zip' }
+if (-not $ArchivePath) { $ArchivePath = Join-Path (Split-Path -Parent $repoRoot) 'NeonRelay-Complete-Package-v1.2.0-submission.zip' }
 $OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
 $ArchivePath = [IO.Path]::GetFullPath($ArchivePath)
 if ($ArchivePath.StartsWith($OutputDirectory + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) {
@@ -75,6 +75,14 @@ foreach ($file in @('build-result.txt','gameplay-checks.txt','runtime-checks.txt
 Get-ChildItem -LiteralPath (Join-Path $repoRoot 'Docs') -Filter '*.png' | ForEach-Object {
     Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $guideDir 'Screenshots') -Force
 }
+# Make the full player guide and a Notepad-friendly synopsis visible beside the EXE.
+# Rewrite only local Markdown links in this extra README copy; preserve the source export.
+$readme = Get-Content -LiteralPath (Join-Path $repoRoot 'README.md') -Raw
+$readme = $readme.Replace('(Docs/','(02-Source-and-Build/Docs/').Replace('(CHANGELOG.md)','(02-Source-and-Build/CHANGELOG.md)')
+$readme | Set-Content -LiteralPath (Join-Path $OutputDirectory 'README.md') -Encoding UTF8
+$synopsis = Get-Content -LiteralPath (Join-Path $repoRoot 'Docs\PROFESSOR-SYNOPSIS.md') -Raw
+$synopsis = $synopsis -replace '(?m)^#{1,6} ', ''
+$synopsis | Set-Content -LiteralPath (Join-Path $OutputDirectory '01-PROFESSOR-SYNOPSIS.txt') -Encoding UTF8
 @"
 NEON RELAY - COMPLETE PACKAGE
 
@@ -92,6 +100,8 @@ H opens help/options. M toggles sound. F11 toggles fullscreen.
 Reach each finish to advance automatically. All three stages are completable. Bonus cells are optional.
 
 WHAT IS WHERE
+README.md          Full download/run guide, FAQ, sharing instructions, and professor synopsis.
+01-PROFESSOR-SYNOPSIS.txt  How the game was created, built, run, and verified; opens in Notepad.
 01-Game-Guide       Startup, controls, a folder map, and screenshots.
 02-Source-and-Build Complete editable source, documentation, Unity settings, and build scripts.
 03-Verification    Test results, the source revision, packaging checks, and a file inventory.
@@ -100,6 +110,19 @@ MonoBleedingEdge   Required C# runtime. Keep its name.
 D3D12              Required graphics support files. Keep its name.
 
 Every folder contains 00-FOLDER-CONTENTS.txt explaining what it holds.
+
+SHARING OR SUBMITTING
+Send the complete NeonRelay-Complete-Package-v1.2.0-submission.zip, or its GitHub release link.
+The recipient extracts the whole ZIP and opens NeonRelay.exe. Do not send the EXE by itself.
+GitHub Code > Download ZIP and Source code archives contain source, not the compiled player.
+Release: https://github.com/ogunmefun/2d-project/releases/tag/v1.2.0-submission
+
+QUICK HELP
+Missing DLL/data file: extract the entire ZIP into a fresh folder and keep all runtime files together.
+Not moving: click the game window, press Enter, wait for GET READY, or press Esc to resume if paused.
+Wide gap: release and press jump a second time while airborne. Cells are optional.
+Settings and best time save locally; the current run/checkpoints do not save when closing the game.
+For the full FAQ, read README.md or the repository README online.
 
 EDIT IN UNITY
 Unity Hub > Add project from disk > select 02-Source-and-Build\Neon Relay.
@@ -121,7 +144,7 @@ Unity regenerates Library/Temp caches; those caches and Git internals are not pa
 
 function Get-FolderPurpose([string]$relative) {
     switch -Regex ($relative.Replace('\','/')) {
-        '^\.$' { return 'START HERE. NeonRelay.exe launches the game. The numbered folders contain guides, editable source, and verification. Other folders and DLLs support the executable.' }
+        '^\.$' { return 'START HERE. NeonRelay.exe launches the game. README.md has the full guide and FAQ; 01-PROFESSOR-SYNOPSIS.txt explains creation, building, running, and verification. Numbered folders hold guides, source, and reports. Other folders and DLLs support the executable.' }
         '^01-Game-Guide$' { return 'Player instructions and a map of the package. The Screenshots folder shows the game, controls, stages, and results.' }
         '^01-Game-Guide/Screenshots$' { return 'PNG screenshots captured from the verified Windows player. These are reference images; they are not needed to launch the game.' }
         '^02-Source-and-Build$' { return 'The complete clean source repository, with its original folder layout. Open Neon Relay in Unity Hub. README.md, Docs, and Tools explain how to edit, build, and verify it.' }
@@ -185,6 +208,7 @@ if (Get-ChildItem -LiteralPath $OutputDirectory -Recurse -Force | Where-Object {
 $unlabeled = @($directories | Where-Object { -not (Test-Path -LiteralPath (Join-Path $_.FullName $noteName)) })
 if ($unlabeled.Count) { throw 'One or more folders lack a contents note.' }
 @("PASS: NeonRelay.exe is at the top level.","PASS: $($directories.Count) folders each have a contents note.",
+    'PASS: Player README and professor synopsis are included beside the executable.',
     "PASS: $($runtimeFiles.Count) runtime files match the tested Windows build byte-for-byte.",
     "PASS: $($sourceFiles.Count) source files match the source snapshot byte-for-byte.",
     'PASS: Required Unity folder names and dependencies are preserved.',

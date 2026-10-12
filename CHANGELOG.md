@@ -1,5 +1,12 @@
 # Changelog
 
+## Submission documentation — 2026-10-12
+
+- Expanded the README with download/extraction steps, controls, gameplay guidance, FAQ, troubleshooting, and sharing/submission instructions.
+- Added a professor-facing synopsis of the design, creation, implementation, build process, execution, AI coding assistance, and recorded verification.
+- Included the full README and a Notepad-friendly professor synopsis beside the packaged executable, with working local documentation links.
+- Published an updated complete submission ZIP while preserving the tested 1.2.0 game and earlier release archives.
+
 ## Complete labeled package — 2026-10-12
 
 - Put NeonRelay.exe at the top level of a complete Windows/source hand-in folder.

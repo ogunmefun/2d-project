@@ -1,6 +1,6 @@
 # Complete labeled Neon Relay package
 
-[Download the complete package](https://github.com/ogunmefun/2d-project/releases/download/v1.2.0-complete/NeonRelay-Complete-Package-v1.2.0.zip).
+[Download the complete submission package](https://github.com/ogunmefun/2d-project/releases/download/v1.2.0-submission/NeonRelay-Complete-Package-v1.2.0-submission.zip).
 
 Extract the entire ZIP. Open the **NEON RELAY - COMPLETE PACKAGE** folder and double-click **NeonRelay.exe**, which is at the top level. Unity is not required to play.
 
@@ -10,6 +10,8 @@ Extract the entire ZIP. Open the **NEON RELAY - COMPLETE PACKAGE** folder and do
 | --- | --- |
 | **NeonRelay.exe** | **The game: double-click this file to play.** |
 | 00-START-HERE.txt | Launch instructions, controls, and navigation |
+| README.md | Full player guide, FAQ, sharing instructions, and professor synopsis |
+| 01-PROFESSOR-SYNOPSIS.txt | Standalone professor synopsis, readable in Notepad, covering creation, build, running, and verification |
 | 00-FOLDER-CONTENTS.txt | A note in this folder and every subfolder explaining its contents |
 | 01-Game-Guide | Player instructions, a folder map, and screenshots |
 | 02-Source-and-Build | Complete editable Unity source, project settings, original documentation, and build scripts |
@@ -42,11 +44,13 @@ Build and verify the Windows player first. From the repository root:
 ./Tools/package-complete.ps1 -ArchiveExisting
 ```
 
-Output defaults to **NEON RELAY - COMPLETE PACKAGE** beside the repository. The ZIP is **NeonRelay-Complete-Package-v1.2.0.zip** in the same parent folder. Use `-OutputDirectory` and `-ArchivePath` to choose new locations. The script preserves existing archives and refuses accidental replacement.
+Output defaults to **NEON RELAY - COMPLETE PACKAGE** beside the repository. The ZIP is **NeonRelay-Complete-Package-v1.2.0-submission.zip** in the same parent folder. Use `-OutputDirectory` and `-ArchivePath` to choose new locations. The script preserves existing archives and refuses accidental replacement.
+
+To refresh the existing complete folder while reviewing documentation, use `./Tools/package-complete.ps1 -ArchiveExisting -AssembleOnly`. Commit new source/documentation files before creating the final archive. If a ZIP with the default name already exists, supply a new `-ArchivePath` even for assembly review. The script copies the README to the package root with working local links and exports Docs/PROFESSOR-SYNOPSIS.md as the plain-text 01-PROFESSOR-SYNOPSIS.txt.
 
 The script checks that every directory contains a note, every runtime file matches the verified build, and every source file matches the exported snapshot. It hashes every file in the finished ZIP against the assembled folder and writes a checksum sidecar. 03-Verification/FILE-MANIFEST.csv lists relative paths, sizes, and SHA-256 hashes; it excludes its own row to avoid a circular checksum.
 
-This packaging release uses the unchanged Neon Relay 1.2.0 game executable. The GitHub tag **v1.2.0-complete** identifies the labeled source/documentation snapshot.
+This packaging release uses the unchanged Neon Relay 1.2.0 game executable. The GitHub tag **v1.2.0-submission** identifies the expanded player guide and professor synopsis snapshot. The earlier **v1.2.0-complete** package remains a historical release.
 
 ## Verification of this package
 

@@ -1,8 +1,9 @@
 FOLDER: Docs
 
-Documentation, submission notes, the complete-package guide, screenshots, and recorded build/gameplay/runtime checks. README.md in the repository root links to these files.
+Documentation, the professor synopsis, submission notes, the complete-package guide, screenshots, and recorded build/gameplay/runtime checks. README.md in the repository root links to these files.
 
 CONTENTS
+[FILE]   PROFESSOR-SYNOPSIS.md - How the game was created, built, run, and verified; exported beside the packaged EXE as 01-PROFESSOR-SYNOPSIS.txt.
 [FILE]   build-result.txt
 [FILE]   complete-package-runtime-checks.txt
 [FILE]   gameplay-checks.txt
