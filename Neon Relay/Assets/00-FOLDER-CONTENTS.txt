@@ -1,0 +1,14 @@
+FOLDER: Neon Relay/Assets
+
+Unity project assets: C# game scripts, editor/build helpers, scenes, and rendering/input settings. Files ending in .meta preserve Unity asset identities; keep them beside their matching files and folders.
+
+CONTENTS
+[FILE]   00-FOLDER-CONTENTS.txt.meta
+[FILE]   Editor.meta
+[FILE]   Scenes.meta
+[FILE]   Scripts.meta
+[FILE]   Settings.meta
+[FOLDER] Editor
+[FOLDER] Scenes
+[FOLDER] Scripts
+[FOLDER] Settings

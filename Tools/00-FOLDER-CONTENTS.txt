@@ -1,0 +1,8 @@
+FOLDER: Tools
+
+PowerShell helpers: request.ps1 asks an open Unity editor to verify/build/open the game; package-windows.ps1 creates a player ZIP; package-complete.ps1 assembles the fully labeled player-and-source package. These scripts contain no account credentials.
+
+CONTENTS
+[FILE]   package-complete.ps1
+[FILE]   package-windows.ps1
+[FILE]   request.ps1

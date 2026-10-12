@@ -1,0 +1,11 @@
+FOLDER: .
+
+Neon Relay source repository. README.md explains how to play or edit the game. Docs contains guides and verification. Tools contains build/package helpers. Neon Relay is the Unity project. The complete download has NeonRelay.exe at its top level.
+
+CONTENTS
+[FILE]   .gitignore
+[FILE]   CHANGELOG.md
+[FILE]   README.md
+[FOLDER] Docs
+[FOLDER] Neon Relay
+[FOLDER] Tools

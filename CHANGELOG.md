@@ -1,5 +1,13 @@
 # Changelog
 
+## Complete labeled package — 2026-10-12
+
+- Put NeonRelay.exe at the top level of a complete Windows/source hand-in folder.
+- Added numbered guide, source/build, and verification folders, plus a contents note in every directory.
+- Included the full clean Unity project, build tools, screenshots, reports, folder map, and file hashes.
+- Added a reproducible packaging script that verifies runtime, source, and archive integrity.
+- Preserved the tested Neon Relay 1.2.0 game and its required runtime folder names.
+
 ## 1.2.0 — Auto-run edition
 
 - Replaced manual movement and connector puzzles with forward auto-run and jump timing.

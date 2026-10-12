@@ -1,0 +1,8 @@
+FOLDER: Neon Relay/Assets/Settings/Scenes
+
+The Universal Render Pipeline 2D scene template used by the Unity project template. This is a template asset, not the playable NeonRelay main scene.
+
+CONTENTS
+[FILE]   00-FOLDER-CONTENTS.txt.meta
+[FILE]   URP2DSceneTemplate.unity
+[FILE]   URP2DSceneTemplate.unity.meta

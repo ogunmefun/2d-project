@@ -6,7 +6,11 @@ A complete, three-stage **auto-running 2D platformer** built with Unity 6.5 (600
 
 ## Download and play
 
-[Download Neon Relay 1.2 for Windows x64](https://github.com/ogunmefun/2d-project/releases/download/v1.2.0/NeonRelay-Windows-v1.2.0.zip).
+**[Download the complete labeled Neon Relay package](https://github.com/ogunmefun/2d-project/releases/download/v1.2.0-complete/NeonRelay-Complete-Package-v1.2.0.zip)** — Windows game, editable Unity source, guides, screenshots, and verification in one ZIP.
+
+Open the extracted **NEON RELAY - COMPLETE PACKAGE** folder. **NeonRelay.exe is right at the top level.** The numbered folders separate the game guide, source/build files, and verification. Every folder contains **00-FOLDER-CONTENTS.txt** explaining what is inside. See the [complete folder guide](Docs/PACKAGING.md).
+
+[Smaller player-only download](https://github.com/ogunmefun/2d-project/releases/download/v1.2.0/NeonRelay-Windows-v1.2.0.zip) is also available.
 
 Extract the **whole ZIP**, then open **NeonRelay.exe**. Keep the data folder and DLLs beside it. Unity is not required.
 

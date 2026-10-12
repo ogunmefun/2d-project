@@ -1,0 +1,20 @@
+FOLDER: Neon Relay/Assets/Settings
+
+Universal Render Pipeline configuration, renderer, volume profile, input-action asset, and scene-template settings. The Scenes subfolder holds the original URP 2D template scene.
+
+CONTENTS
+[FILE]   00-FOLDER-CONTENTS.txt.meta
+[FILE]   DefaultVolumeProfile.asset
+[FILE]   DefaultVolumeProfile.asset.meta
+[FILE]   InputSystem_Actions.inputactions
+[FILE]   InputSystem_Actions.inputactions.meta
+[FILE]   Lit2DSceneTemplate.scenetemplate
+[FILE]   Lit2DSceneTemplate.scenetemplate.meta
+[FILE]   Renderer2D.asset
+[FILE]   Renderer2D.asset.meta
+[FILE]   Scenes.meta
+[FILE]   UniversalRenderPipelineGlobalSettings.asset
+[FILE]   UniversalRenderPipelineGlobalSettings.asset.meta
+[FILE]   UniversalRP.asset
+[FILE]   UniversalRP.asset.meta
+[FOLDER] Scenes

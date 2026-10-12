@@ -1,0 +1,10 @@
+FOLDER: Neon Relay/Assets/Scenes
+
+Unity scenes. NeonRelay.unity is the playable main scene. SampleScene.unity is the retained template scene; use NeonRelay.unity or the Neon Relay > Play game menu to start the game.
+
+CONTENTS
+[FILE]   00-FOLDER-CONTENTS.txt.meta
+[FILE]   NeonRelay.unity
+[FILE]   NeonRelay.unity.meta
+[FILE]   SampleScene.unity
+[FILE]   SampleScene.unity.meta

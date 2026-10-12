@@ -31,3 +31,7 @@ In Unity, choose **Neon Relay → Run gameplay checks** or **Build Windows (with
 ## Scope
 
 Verified target: Windows x64, keyboard input, 1280×720 windowed and fullscreen switching. Click-to-jump uses the same jump path but was not separately driven by the automated keyboard runner. The editor's startup-scene selection is configured in BuildTools; the main-scene Windows build was tested. This is not a claim of testing every display size, graphics driver, or input device. WebGL, mobile, and gamepad are not verified release targets.
+
+## Complete-package relocation check — 2026-10-12
+
+The unchanged Windows player was copied into the complete labeled package with NeonRelay.exe at the top level. Its executable QA passed all 33 checks again from that location, with a contents note in every folder. See [complete-package-runtime-checks.txt](complete-package-runtime-checks.txt) and the [package guide](PACKAGING.md) for layout and integrity checks.

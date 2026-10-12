@@ -1,0 +1,16 @@
+FOLDER: Neon Relay/Assets/Scripts
+
+Game source: LevelCatalog defines courses; GameSimulation handles auto-run physics, jumps and objectives; NeonRelayGame handles input, menus and rendering; GamePresentation draws scenery, effects and results. RuntimeSmokeTest is opt-in executable QA, activated only with -smokeTest.
+
+CONTENTS
+[FILE]   00-FOLDER-CONTENTS.txt.meta
+[FILE]   GamePresentation.cs
+[FILE]   GamePresentation.cs.meta
+[FILE]   GameSimulation.cs
+[FILE]   GameSimulation.cs.meta
+[FILE]   LevelCatalog.cs
+[FILE]   LevelCatalog.cs.meta
+[FILE]   NeonRelayGame.cs
+[FILE]   NeonRelayGame.cs.meta
+[FILE]   RuntimeSmokeTest.cs
+[FILE]   RuntimeSmokeTest.cs.meta

@@ -1,0 +1,8 @@
+FOLDER: Neon Relay
+
+The editable Unity project. Select THIS folder in Unity Hub because it contains Assets, Packages, and ProjectSettings. Use Unity 6000.5.10f1 and choose Neon Relay > Play game. Unity creates local Library, Temp, Logs, and Builds folders as needed; those generated folders are not source files.
+
+CONTENTS
+[FOLDER] Assets
+[FOLDER] Packages
+[FOLDER] ProjectSettings

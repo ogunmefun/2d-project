@@ -1,0 +1,22 @@
+FOLDER: Docs
+
+Documentation, submission notes, the complete-package guide, screenshots, and recorded build/gameplay/runtime checks. README.md in the repository root links to these files.
+
+CONTENTS
+[FILE]   build-result.txt
+[FILE]   complete-package-runtime-checks.txt
+[FILE]   gameplay-checks.txt
+[FILE]   gameplay.png
+[FILE]   help.png
+[FILE]   PACKAGING.md
+[FILE]   paused.png
+[FILE]   results.png
+[FILE]   runtime-checks.txt
+[FILE]   sector-1.png
+[FILE]   sector-2.png
+[FILE]   sector-3.png
+[FILE]   sector-clear-1.png
+[FILE]   sector-clear-2.png
+[FILE]   SUBMISSION.md
+[FILE]   title.png
+[FILE]   VERIFICATION.md

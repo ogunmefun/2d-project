@@ -1,0 +1,35 @@
+PASS: Title screen loads
+PASS: H opens the field manual from title
+PASS: Field manual freezes simulation
+PASS: M changes the saved sound option
+PASS: Sound option can be restored
+PASS: Reduced effects option is saved
+PASS: Effects option can be restored
+PASS: F11 enters fullscreen
+PASS: F11 returns to windowed mode
+PASS: Escape returns from manual to title
+PASS: Enter starts the game
+PASS: Player runs forward without movement input
+PASS: Space jumps
+PASS: Second Space press double jumps
+PASS: Escape pauses
+PASS: Pause freezes gameplay time
+PASS: Escape resumes
+PASS: Closing in-game help keeps the run safely paused
+PASS: R restarts the sector
+PASS: No connector puzzle opens on E
+PASS: Correct stage loaded automatically: 1
+PASS: Stage 1 completed using keyboard jump timing
+PASS: Stage 1 shows completion screen
+PASS: Finish automatically advances without Enter
+PASS: Correct stage loaded automatically: 2
+PASS: Stage 2 completed using keyboard jump timing
+PASS: Stage 2 shows completion screen
+PASS: Finish automatically advances without Enter
+PASS: Correct stage loaded automatically: 3
+PASS: Stage 3 completed using keyboard jump timing
+PASS: Stage 3 shows completion screen
+PASS: Replay starts a clean run
+PASS: Finish accepts zero bonus cells while airborne
+
+ALL RUNTIME CHECKS PASSED

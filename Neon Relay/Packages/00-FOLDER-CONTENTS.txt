@@ -1,0 +1,7 @@
+FOLDER: Neon Relay/Packages
+
+Unity package dependencies. manifest.json lists required packages; packages-lock.json records resolved versions. Unity downloads/imports dependencies when opening the source project.
+
+CONTENTS
+[FILE]   manifest.json
+[FILE]   packages-lock.json

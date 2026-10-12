@@ -1,0 +1,10 @@
+FOLDER: Neon Relay/Assets/Editor
+
+Editor-only C# tools. BuildTools.cs sets the startup scene and builds the game; GameChecks.cs runs deterministic gameplay regression checks. These editor tools are not part of ordinary player input.
+
+CONTENTS
+[FILE]   00-FOLDER-CONTENTS.txt.meta
+[FILE]   BuildTools.cs
+[FILE]   BuildTools.cs.meta
+[FILE]   GameChecks.cs
+[FILE]   GameChecks.cs.meta

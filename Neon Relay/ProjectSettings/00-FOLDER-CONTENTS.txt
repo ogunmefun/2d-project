@@ -1,0 +1,33 @@
+FOLDER: Neon Relay/ProjectSettings
+
+Project-wide Unity settings: editor version, build scenes, Windows player identity/version, graphics, input, audio, physics, timing, quality and other engine settings. These files make the project reproducible.
+
+CONTENTS
+[FILE]   AudioManager.asset
+[FILE]   ClusterInputManager.asset
+[FILE]   DynamicsManager.asset
+[FILE]   EditorBuildSettings.asset
+[FILE]   EditorSettings.asset
+[FILE]   GraphicsSettings.asset
+[FILE]   InputManager.asset
+[FILE]   MemorySettings.asset
+[FILE]   MultiplayerManager.asset
+[FILE]   NavMeshAreas.asset
+[FILE]   NetworkManager.asset
+[FILE]   PackageManagerSettings.asset
+[FILE]   Physics2DSettings.asset
+[FILE]   PhysicsCoreProjectSettings2D.asset
+[FILE]   PresetManager.asset
+[FILE]   ProjectAuditorSettings.asset
+[FILE]   ProjectSettings.asset
+[FILE]   ProjectVersion.txt
+[FILE]   QualitySettings.asset
+[FILE]   SceneTemplateSettings.json
+[FILE]   ShaderGraphSettings.asset
+[FILE]   TagManager.asset
+[FILE]   TimeManager.asset
+[FILE]   UnityConnectSettings.asset
+[FILE]   URPProjectSettings.asset
+[FILE]   VersionControlSettings.asset
+[FILE]   VFXManager.asset
+[FILE]   XRSettings.asset
