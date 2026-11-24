@@ -1,0 +1,36 @@
+PASS: Desktop quick-start opens directly in gameplay.
+PASS: Eight crystals are present in the Windows player.
+PASS: Sunlight casts real soft shadows in the player.
+PASS: Shadows are enabled by default.
+PASS: Lantern point lights cast soft shadows.
+PASS: Help opens from the initial screen.
+PASS: Help returns safely to the previous screen or pauses a walk.
+PASS: Starting creates a fresh walk.
+PASS: Explorer settles on solid ground.
+PASS: Exit cannot finish before collecting every crystal.
+PASS: Directional input moves the CharacterController.
+PASS: Jump input lifts the explorer.
+PASS: Gravity lands the explorer safely.
+PASS: Pause freezes movement and walk time.
+PASS: Closing in-game help safely returns to pause.
+PASS: Resume returns to gameplay.
+PASS: Sound toggle works.
+PASS: Shadow option disables shadows.
+PASS: Shadow option restores shadows.
+PASS: Walking route collects Welcome path through its trigger.
+PASS: Walking route collects Cedar path through its trigger.
+PASS: Walking route collects West path through its trigger.
+PASS: Walking route collects Quiet grove through its trigger.
+PASS: Walking route collects Sunlit terrace through its trigger.
+PASS: Walking route collects East lantern through its trigger.
+PASS: Walking route collects Supply corner through its trigger.
+PASS: Walking route collects Sun shrine through its trigger.
+PASS: All eight crystals open the arch and remove its barrier.
+PASS: A collected crystal cannot be counted twice.
+PASS: Finishing also requires reaching the arch.
+PASS: The full walking route reaches the victory screen.
+PASS: Replay resets crystals and relocks the arch.
+PASS: Collectibles work again after replay.
+PASS: An isolated fall test returns to spawn and preserves crystals.
+PASS: Solid crate collision prevents walking through objects.
+PASS: No runtime exceptions or errors were reported.

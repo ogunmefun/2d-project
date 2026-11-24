@@ -1,0 +1,24 @@
+PASS: Scene has a game manager, explorer, and exit arch.
+PASS: Eight collectible prefab instances are assigned.
+PASS: Every crystal has a unique ID.
+PASS: Ten reusable prefab assets exist.
+PASS: Crystals retain their prefab connections.
+PASS: Explorer is an editable prefab instance.
+PASS: Player can walk up the shrine steps.
+PASS: Collectibles use trigger colliders with kinematic bodies.
+PASS: Directional sunlight casts soft shadows.
+PASS: Lanterns have real point lights with soft shadows.
+PASS: Player quality settings enable visible real-time shadows.
+PASS: Every mesh has a supported material.
+PASS: The closed exit has a physical barrier.
+PASS: Solid ground below Cedar path.
+PASS: Solid ground below Supply corner.
+PASS: Solid ground below East lantern.
+PASS: Solid ground below Sunlit terrace.
+PASS: Solid ground below Quiet grove.
+PASS: Solid ground below West path.
+PASS: Solid ground below Sun shrine.
+PASS: Solid ground below Welcome path.
+PASS: Main garden scene is included in the build.
+PASS: Deprecated dynamic batching is disabled for Windows.
+PASS: Garden materials support GPU instancing.

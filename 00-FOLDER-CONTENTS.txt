@@ -1,11 +1,7 @@
 FOLDER: .
 
-Neon Relay source repository. README.md explains how to play or edit the game. Docs contains guides and verification. Tools contains build/package helpers. Neon Relay is the Unity project. The complete download has NeonRelay.exe at its top level.
-
-CONTENTS
-[FILE]   .gitignore
-[FILE]   CHANGELOG.md
-[FILE]   README.md
-[FOLDER] Docs
-[FOLDER] Neon Relay
-[FOLDER] Tools
+Unity game source repository.
+Lantern-Garden contains the 3D exploration game, Unity source, guides, synopsis, and test reports.
+Neon Relay, Docs, and Tools contain the earlier 2D game and its documentation.
+README.md links each game's separate complete submission ZIP on GitHub Releases.
+Compiled executables are included in those release ZIPs, not in the source checkout.

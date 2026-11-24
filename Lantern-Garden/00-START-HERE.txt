@@ -1,0 +1,35 @@
+LANTERN GARDEN - COMPLETE SUBMISSION 1.0.1
+
+PLAY
+1. Extract the entire ZIP (right-click > Extract All).
+2. Open PLAY THE GAME.
+3. Double-click LanternGarden.exe, click the game, and press Enter.
+Unity is NOT required to play. Windows x64 is required.
+Keep all folders and DLLs beside the EXE together.
+
+WASD / arrows move. Space jumps. Esc pauses. H opens Help.
+Collect all 8 sun crystals, then walk to the arch to finish.
+No enemies or time limits. Falling returns you to the path and keeps crystals.
+M toggles sound; F11 toggles fullscreen. Help includes a shadows option.
+
+FOR THE PROFESSOR
+Docs/PROFESSOR-SYNOPSIS.md explains how the game was created, built, run, and tested.
+Docs/VERIFICATION.md and the adjacent text reports record 24 editor checks,
+36 executable checks, and a build with zero errors and zero warnings.
+Docs/SUBMISSION.md maps this complete package and gives a demo sequence.
+
+EDIT OR REBUILD
+In Unity Hub choose Add project from disk and select UnityProject.
+Use Unity 6000.5.10f1. Allow the first import to finish.
+Choose Lantern Garden > Open garden scene, then Lantern Garden > Play game.
+Assets/Prefabs contains 10 reusable objects. Assets/Scripts contains the code.
+README.md and Docs/BEGINNER-GUIDE.md explain the scene, lighting, and build tools.
+Import caches are recreated by Unity and are intentionally excluded.
+
+SUBMIT
+Upload LanternGarden-Complete-Submission-v1.0.1.zip as one file,
+or submit this release link if your course accepts links:
+https://github.com/ogunmefun/2d-project/releases/tag/lantern-garden-v1.0.1-submission
+
+The .sha256 sidecar is optional; PACKAGE-MANIFEST.sha256 lists file checksums.
+The PLAY THE GAME folder is portable. Do not send the EXE alone.

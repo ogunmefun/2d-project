@@ -1,0 +1,12 @@
+**/Library/
+**/Temp/
+**/Logs/
+**/obj/
+**/UserSettings/
+**/.vs/
+**/*.csproj
+**/*.sln
+artifacts/
+PLAY THE GAME/
+*.zip
+*.lnk

@@ -1,4 +1,20 @@
-# Neon Relay
+# Unity game submissions
+
+## Lantern Garden — 3D exploration and collecting
+
+**[DOWNLOAD THE COMPLETE LANTERN GARDEN SUBMISSION (ZIP)](https://github.com/ogunmefun/2d-project/releases/download/lantern-garden-v1.0.1-submission/LanternGarden-Complete-Submission-v1.0.1.zip)**
+
+A beginner-friendly 3D game with eight collectible crystals, ten reusable prefabs, solid objects, lanterns, sunlight, and real shadows. The complete ZIP includes the Windows executable, editable Unity project, guides, professor synopsis, screenshots, and verification reports.
+
+**Extract All → LANTERN GARDEN - COMPLETE PACKAGE → PLAY THE GAME → LanternGarden.exe → Enter.** Use WASD/arrows to move and Space to jump. Collect all eight crystals, then reach the arch. **Windows x64; Unity is not needed to play.** Keep the complete game folder together.
+
+[Submission release](https://github.com/ogunmefun/2d-project/releases/tag/lantern-garden-v1.0.1-submission) · [Run instructions and FAQ](Lantern-Garden/README.md) · [Professor synopsis](Lantern-Garden/Docs/PROFESSOR-SYNOPSIS.md) · [Unity source](Lantern-Garden/UnityProject) · [Verification](Lantern-Garden/Docs/VERIFICATION.md)
+
+The recorded build passed **24 editor checks and 36 executable checks**, with **zero build errors or warnings**. The release ZIP is the one-file submission; GitHub's Code → Download ZIP contains source only.
+
+---
+
+## Neon Relay
 
 A three-stage **2D auto-running platformer** for Windows. A maintenance robot runs through a neon city while you time jumps over spikes, moving saws, and gaps. Finish each course to advance automatically; finish all three to win.
 
@@ -12,7 +28,7 @@ A three-stage **2D auto-running platformer** for Windows. A maintenance robot ru
 
 ## Download and run
 
-1. Click **DOWNLOAD NEON RELAY** above. Alternatively, open [Releases](https://github.com/ogunmefun/2d-project/releases/latest), expand **Assets**, and download **NeonRelay-Complete-Package-v1.2.0-submission.zip** (about 39 MB).
+1. Click **DOWNLOAD NEON RELAY** above. Alternatively, open [Releases](https://github.com/ogunmefun/2d-project/releases/tag/v1.2.0-submission), expand **Assets**, and download **NeonRelay-Complete-Package-v1.2.0-submission.zip** (about 39 MB).
 2. Find the ZIP in Downloads. Right-click it, choose **Extract All**, select a location such as Desktop or Documents, and click **Extract**.
 3. Open the extracted **NEON RELAY - COMPLETE PACKAGE** folder.
 4. Double-click **NeonRelay.exe** at the top level. If Windows hides file extensions, it may appear as **NeonRelay** with type **Application**. **UnityCrashHandler64.exe** is a support program; the game launcher is **NeonRelay.exe**.
